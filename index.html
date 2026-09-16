@@ -384,18 +384,79 @@
 
   </main>
 
-  <div id="editCellModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
+  <!-- Edit Cell Modal -->
+  <div id="editCellModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
       <div class="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
         <div>
           <span class="text-[10px] uppercase font-bold text-indigo-600 tracking-wider">Shift Editor & Reassignment</span>
           <h3 id="modalPeriodAideTitle" class="font-extrabold text-slate-900 text-sm">Period: Staff</h3>
         </div>
-        <button onclick="closeModal('editCellModal')" class="w-7 h-7 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-600 font-bold text-xs">✕</button>
+        <button onclick="closeModal('editCellModal')" class="w-7 h-7 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-600 font-bold text-xs transition">✕</button>
       </div>
 
+      <div class="p-4 space-y-4 overflow-y-auto">
+        <!-- Duty Description -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Duty Assignment / Location:</label>
+          <input type="text" id="modalCustomDutyInput" placeholder="e.g. 2nd Floor MS Support" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
+        </div>
+
+        <!-- Color / Category Select -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Category & Visual Color:</label>
+          <select id="modalColorSelect" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
+            <option value="hall2MS">🏢 2nd Floor MS</option>
+            <option value="hall2HS">🏢 2nd Floor HS</option>
+            <option value="hall3MS">🏢 3rd Floor MS</option>
+            <option value="hall3HS">🏢 3rd Floor HS</option>
+            <option value="cafe">🍽️ Cafeteria Floor</option>
+            <option value="boysBath">🚻 Boys Bathroom (M)</option>
+            <option value="girlsBath">🚻 Girls Bathroom</option>
+            <option value="lunch">🥪 Lunch (Duty-Free)</option>
+            <option value="admin">🤝 Admin / Teacher Support</option>
+            <option value="tech">💻 Tech Support</option>
+            <option value="attend">📝 Attendance / Main Office</option>
+            <option value="auditorium">🎭 Auditorium</option>
+            <option value="bus">🚌 Bus Duty</option>
+            <option value="cases">📱 Cellphone Cases / Yondr</option>
+            <option value="walk">🚶 Walk The Building</option>
+            <option value="exit">🚪 Exit / Dismissal Supervision</option>
+            <option value="security">👮 Security Desk</option>
+            <option value="packages">📦 Package Room / Supply</option>
+            <option value="detention">⚖️ Detention / After School</option>
+            <option value="off">⚪ Off Duty / Not Scheduled</option>
+            <option value="plain">General Coverage</option>
+          </select>
+        </div>
+
+        <!-- Preset Quick Picks -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Quick Select Preset Duty:</label>
+          <div id="presetRoleButtons" class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 max-h-44 overflow-y-auto p-1 bg-slate-50 rounded-xl border border-slate-200">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+      </div>
+
+      <div class="p-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-2">
+        <button onclick="setSlotToVacant()" class="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition">
+          Clear / Unassigned
+        </button>
+        <div class="flex items-center gap-2">
+          <button onclick="closeModal('editCellModal')" class="px-3 py-2 bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200 transition">
+            Cancel
+          </button>
+          <button onclick="saveCellEdit()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md transition">
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Supervisor PIN Authentication Modal -->
-  <div id="supervisorPinModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+  <div id="supervisorPinModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
     <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl border border-slate-200 overflow-hidden transform transition-all p-6 text-center">
       <div class="w-12 h-12 bg-indigo-100 text-indigo-700 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl font-bold shadow-inner">
         🔒
@@ -451,7 +512,7 @@
   </div>
 
   <!-- Change PIN Modal -->
-  <div id="changePinModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+  <div id="changePinModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
     <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl border border-slate-200 overflow-hidden p-6 text-left">
       <h3 class="text-base font-black text-slate-900">Change Supervisor PIN</h3>
       <p class="text-xs text-slate-500 mt-1">Set a new numeric PIN to protect your admin mode from unauthorized staff changes.</p>
@@ -662,6 +723,11 @@
     let selectedStaffAideId = null;
     let supervisorPin = '1234';
 
+    try {
+      const savedPin = localStorage.getItem('school_aide_supervisor_pin');
+      if (savedPin) supervisorPin = savedPin;
+    } catch (e) {}
+
     function timeToMinutes(tStr) {
       if (!tStr) return 0;
       const [h, m] = tStr.split(':').map(Number);
@@ -866,7 +932,10 @@
       
       if (pinInput) pinInput.value = '';
       if (errorMsg) errorMsg.classList.add('hidden');
-      if (pinModal) pinModal.classList.remove('hidden');
+      if (pinModal) {
+        pinModal.classList.remove('hidden');
+        pinModal.classList.add('flex');
+      }
 
       setTimeout(() => {
         if (pinInput) pinInput.focus();
@@ -922,7 +991,10 @@
       document.getElementById('newPinInput').value = '';
       document.getElementById('confirmPinInput').value = '';
       if (err) err.classList.add('hidden');
-      if (modal) modal.classList.remove('hidden');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
     }
 
     function saveNewSupervisorPin() {
@@ -943,6 +1015,9 @@
       }
 
       supervisorPin = newPin;
+      try {
+        localStorage.setItem('school_aide_supervisor_pin', newPin);
+      } catch (e) {}
       closeModal('changePinModal');
       showToast('New Supervisor PIN saved successfully!', 'emerald');
     }
@@ -1443,18 +1518,33 @@
 
       const aide = staffList.find(a => a.id === aideId);
       const period = PERIODS.find(p => p.id === periodId);
+      if (!aide || !period) return;
+
       const slot = scheduleData[aideId] && scheduleData[aideId][periodId] ? scheduleData[aideId][periodId] : { text: '', type: 'plain' };
 
-      document.getElementById('modalPeriodAideTitle').innerText = `${period.name} (${period.label}) — ${aide.name}`;
-      document.getElementById('modalCustomDutyInput').value = slot.text || '';
-      document.getElementById('modalColorSelect').value = slot.type || 'plain';
+      const titleEl = document.getElementById('modalPeriodAideTitle');
+      const inputEl = document.getElementById('modalCustomDutyInput');
+      const colorEl = document.getElementById('modalColorSelect');
+
+      if (titleEl) titleEl.innerText = `${period.name} (${period.label}) — ${aide.name}`;
+      if (inputEl) inputEl.value = slot.text || '';
+      if (colorEl) colorEl.value = slot.type || 'plain';
 
       initPresetButtons();
-      document.getElementById('editCellModal').classList.remove('hidden');
+
+      const modal = document.getElementById('editCellModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
     }
 
     function closeModal(id) {
-      document.getElementById(id).classList.add('hidden');
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
     }
 
     function saveCellEdit() {
