@@ -56,8 +56,8 @@
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <h1 class="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-tight">School Aide Coverage Hub</h1>
-            <span class="bg-indigo-100 text-indigo-800 text-[10px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider">Live Roster</span>
+            <h1 id="appHeaderTitle" class="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-tight">School Aide Coverage Hub</h1>
+            <span id="appHeaderBadge" class="bg-indigo-100 text-indigo-800 text-[10px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider">Supervisor Admin</span>
           </div>
           <p class="text-xs text-slate-500 font-medium flex items-center gap-2 mt-0.5">
             <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -68,8 +68,8 @@
         </div>
       </div>
 
-      <!-- View Navigation Tabs -->
-      <div class="flex items-center flex-wrap gap-2">
+      <!-- Navigation for Supervisor Mode -->
+      <div id="adminNavControls" class="flex items-center flex-wrap gap-2">
         <div class="bg-slate-100 p-1 rounded-xl flex items-center text-xs font-semibold text-slate-600 border border-slate-200 shadow-inner">
           <button id="navBtnMaster" onclick="switchView('master')" class="px-3 py-1.5 rounded-lg bg-white text-indigo-700 shadow-xs font-bold transition">
             Master Grid
@@ -81,13 +81,12 @@
           <button id="navBtnPeriods" onclick="switchView('periods')" class="px-3 py-1.5 rounded-lg hover:text-slate-900 transition">
             Period by Period
           </button>
-          <button id="navBtnStaffSite" onclick="switchView('staffsite')" class="px-3 py-1.5 rounded-lg hover:text-slate-900 transition flex items-center gap-1">
-            <span>Staff Portal</span>
-            <span class="bg-indigo-100 text-indigo-700 text-[9px] font-bold px-1 py-0.2 rounded">Embed</span>
+          <button id="navBtnStaffSite" onclick="setAppMode('staff')" class="px-3 py-1.5 rounded-lg hover:text-slate-900 transition flex items-center gap-1">
+            <span>Staff Portal View</span>
+            <span class="bg-indigo-100 text-indigo-700 text-[9px] font-bold px-1 py-0.2 rounded">Staff</span>
           </button>
         </div>
 
-        <!-- Utility Buttons -->
         <button onclick="copyShareableUrl()" title="Copy live link to clipboard" class="px-2.5 py-1.5 text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 rounded-lg border border-slate-200 shadow-xs flex items-center gap-1.5 transition">
           <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
           Share
@@ -99,6 +98,17 @@
         <button onclick="window.print()" class="px-3 py-1.5 text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white rounded-lg shadow-xs flex items-center gap-1.5 transition">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
           Print
+        </button>
+      </div>
+
+      <!-- Navigation for Staff Portal Mode -->
+      <div id="staffNavControls" class="hidden flex items-center gap-2">
+        <button onclick="window.print()" class="px-3 py-1.5 text-xs font-bold bg-white hover:bg-slate-50 text-slate-700 rounded-lg border border-slate-200 shadow-xs flex items-center gap-1.5 transition">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+          Print
+        </button>
+        <button onclick="promptSupervisorUnlock()" class="px-3 py-1.5 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-xs flex items-center gap-1.5 transition">
+          <span>🔒 Supervisor Access</span>
         </button>
       </div>
     </div>
@@ -114,53 +124,58 @@
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 w-full flex-grow flex flex-col gap-4">
 
-    <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs no-print">
-      <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 pb-3 border-b border-slate-100">
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="text-base">⚡</span>
-            <h2 class="text-sm font-black text-slate-900 tracking-tight uppercase">Morning Call-Out Quick Solver</h2>
-            <span id="uncoveredCounter" class="bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2 py-0.5 rounded-full">0 Open Posts</span>
+    <div id="adminDashboardWidgets" class="space-y-4">
+      <!-- Callout Quick Solver -->
+      <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs no-print">
+        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-base">⚡</span>
+              <h2 class="text-sm font-black text-slate-900 tracking-tight uppercase">Morning Call-Out Quick Solver</h2>
+              <span id="uncoveredCounter" class="bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2 py-0.5 rounded-full">0 Open Posts</span>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">
+              Tap anyone who called out. Posts needing coverage highlight immediately; click "Auto-Fill" or click any cell in the grid to manually swap.
+            </p>
           </div>
-          <p class="text-xs text-slate-500 mt-0.5">
-            Tap anyone who called out. Posts needing coverage highlight immediately; click "Auto-Fill" or click any cell to manually swap.
-          </p>
+
+          <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="autoFillAllOpenPosts()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5 active:scale-95">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              Auto-Fill Open Posts (Smart Match)
+            </button>
+            <button onclick="resetDaySchedule()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200 transition">
+              Reset Defaults
+            </button>
+          </div>
         </div>
 
-        <div class="flex items-center gap-2 flex-wrap">
-          <button onclick="autoFillAllOpenPosts()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5 active:scale-95">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-            Auto-Fill Open Posts (Smart Match)
-          </button>
-          <button onclick="resetDaySchedule()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200 transition">
-            Reset Defaults
-          </button>
+        <!-- Quick Roster Callout Buttons -->
+        <div class="mt-3 flex items-center flex-wrap gap-2" id="quickAbsencePills">
+          <!-- Dynamically rendered via JS -->
         </div>
       </div>
 
-      <!-- Quick Roster Callout Buttons -->
-      <div class="mt-3 flex items-center flex-wrap gap-2" id="quickAbsencePills">
-        <!-- Dynamically rendered via JS -->
-      </div>
-    </div>
-
-    <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-xs no-print">
-      <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
-        <div class="flex items-center gap-2">
-          <span class="text-sm">🏢</span>
-          <h3 class="text-xs font-black uppercase tracking-wider text-slate-800">4-Zone Floor Coverage Live Inspector</h3>
-          <span class="text-[10px] text-slate-500 font-medium">(2nd Fl MS • 2nd Fl HS • 3rd Fl MS • 3rd Fl HS)</span>
+      <!-- 4-Zone Floor Coverage Live Inspector -->
+      <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-xs no-print">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-sm">🏢</span>
+            <h3 class="text-xs font-black uppercase tracking-wider text-slate-800">4-Zone Floor Coverage Live Inspector</h3>
+            <span class="text-[10px] text-slate-500 font-medium">(2nd Fl MS • 2nd Fl HS • 3rd Fl MS • 3rd Fl HS)</span>
+          </div>
+          <div class="flex items-center gap-2 text-[11px]">
+            <span class="text-slate-500 font-medium">Coverage Status:</span>
+            <span id="floorSummaryPill" class="font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">Checking...</span>
+          </div>
         </div>
-        <div class="flex items-center gap-2 text-[11px]">
-          <span class="text-slate-500 font-medium">Coverage Status:</span>
-          <span id="floorSummaryPill" class="font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">Checking...</span>
+        <div id="floorMiniMatrix" class="grid grid-cols-4 sm:grid-cols-8 gap-2 text-center text-[10px]">
+          <!-- Dynamically rendered via JS -->
         </div>
-      </div>
-      <div id="floorMiniMatrix" class="grid grid-cols-4 sm:grid-cols-8 gap-2 text-center text-[10px]">
-        <!-- Dynamically rendered via JS -->
       </div>
     </div>
 
+    <!-- View 1: Master Schedule Grid -->
     <div id="viewMasterContainer" class="space-y-4">
       <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
         <div class="p-3.5 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
@@ -212,6 +227,7 @@
       </div>
     </div>
 
+    <!-- View 2: Floor Radar -->
     <div id="viewFloorsContainer" class="hidden space-y-4">
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
         <div>
@@ -253,6 +269,7 @@
       </div>
     </div>
 
+    <!-- View 3: Period by Period -->
     <div id="viewPeriodsContainer" class="hidden space-y-4">
       <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs no-print">
         <div class="flex items-center gap-2">
@@ -272,43 +289,55 @@
       </div>
     </div>
 
+    <!-- View 4: Dedicated Staff Portal View (Read-Only) -->
     <div id="viewStaffSiteContainer" class="hidden space-y-5">
-      <!-- Site Announcement Card -->
-      <div class="bg-gradient-to-r from-indigo-900 to-slate-900 text-white rounded-2xl p-6 shadow-md relative overflow-hidden">
+      <div class="bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
         <div class="max-w-2xl relative z-10">
-          <span class="text-[11px] font-extrabold uppercase tracking-widest text-indigo-300 bg-indigo-800/80 px-2.5 py-1 rounded-full">School Aide Daily Board</span>
-          <h2 class="text-2xl font-black mt-2 tracking-tight">Today's Daily Coverage & Lunch Times</h2>
-          <p class="text-xs text-indigo-200 mt-1">
-            Check your schedule below. Reassignments and coverage for absent staff reflect live in real-time.
+          <div class="inline-flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-widest text-indigo-300 bg-indigo-800/80 px-3 py-1 rounded-full mb-3">
+            <span>🛡️ Daily Aide Coverage Board</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-black tracking-tight">Today's Station & Lunch Schedule</h2>
+          <p class="text-xs sm:text-sm text-indigo-200 mt-2 leading-relaxed">
+            Select your name below to view your personal period breakdown, classroom pairings, and assigned duty-free lunch period.
           </p>
         </div>
 
-        <!-- Search Bar for Individual Staff -->
-        <div class="mt-4 max-w-md">
-          <div class="relative">
-            <input type="text" id="staffPortalSearch" oninput="renderStaffPortalView()" placeholder="Type your name (e.g. Romero, Barrios, Scott)..." 
-              class="w-full bg-white/15 text-white placeholder-indigo-200 text-xs px-3.5 py-2.5 rounded-xl border border-white/20 focus:outline-none focus:bg-white focus:text-slate-900 transition shadow-inner">
-            <svg class="w-4 h-4 text-indigo-200 absolute right-3 top-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <!-- Quick Select Staff Chips -->
+        <div class="mt-6">
+          <div class="text-xs font-bold uppercase text-indigo-300 mb-2">Tap Your Name:</div>
+          <div id="staffQuickPickChips" class="flex flex-wrap gap-2">
+            <!-- Chips injected via JS -->
           </div>
         </div>
       </div>
 
-      <!-- Staff Schedule Cards / Table -->
+      <!-- Individual Focused Schedule Card (Displays when an aide is clicked) -->
+      <div id="individualStaffCard" class="hidden bg-white rounded-2xl border-2 border-indigo-500/40 p-5 shadow-lg">
+        <!-- Rendered via JS -->
+      </div>
+
+      <!-- Staff Schedule Table View -->
       <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-        <div class="p-3.5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-          <h3 class="font-bold text-slate-800 text-sm">Where Should I Be Today?</h3>
-          <span class="text-xs text-slate-500 font-medium">Daily Roster View</span>
+        <div class="p-4 border-b border-slate-100 flex flex-wrap justify-between items-center bg-slate-50/70 gap-2">
+          <div>
+            <h3 class="font-extrabold text-slate-800 text-sm">All Staff Daily Overview</h3>
+            <p class="text-xs text-slate-500">Summary of lunch windows, pairings, and primary assignments.</p>
+          </div>
+          <button id="btnToggleStaffMasterTable" onclick="toggleStaffMasterTableView()" class="text-xs font-bold bg-white hover:bg-slate-100 text-indigo-700 px-3 py-1.5 rounded-lg border border-slate-200 shadow-2xs transition">
+            Show Full Period-by-Period Grid
+          </button>
         </div>
+
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs">
-            <thead class="bg-slate-100 text-slate-600 font-bold uppercase tracking-wider text-[10px]">
+            <thead class="bg-slate-100 text-slate-700 font-bold uppercase tracking-wider text-[10px]">
               <tr>
                 <th class="py-3 px-4">Staff Member</th>
                 <th class="py-3 px-4">Hours</th>
-                <th class="py-3 px-4 bg-amber-50 text-amber-900">Assigned Lunch</th>
+                <th class="py-3 px-4 bg-amber-50 text-amber-900">Duty-Free Lunch</th>
                 <th class="py-3 px-4">Period 2-3 Pairings</th>
                 <th class="py-3 px-4">Cafeteria / Arrival / Dismissal</th>
-                <th class="py-3 px-4">Daily Status</th>
+                <th class="py-3 px-4">Status</th>
               </tr>
             </thead>
             <tbody id="staffPortalTableBody" class="divide-y divide-slate-100 font-medium text-slate-700">
@@ -318,19 +347,31 @@
         </div>
       </div>
 
+      <!-- Full Master Table in Read-Only Mode for Staff -->
+      <div id="staffFullMasterWrapper" class="hidden bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+        <div class="p-3.5 bg-slate-900 text-white flex items-center justify-between">
+          <h4 class="font-bold text-xs">Complete Building Schedule (Read-Only)</h4>
+          <span class="text-[10px] text-slate-400">All 8 Periods + Arrival / Dismissal</span>
+        </div>
+        <div class="overflow-x-auto" id="staffReadOnlyGridContainer">
+          <!-- Cloned table injected here -->
+        </div>
+      </div>
+
       <!-- Google Site Instructions Box -->
-      <div class="p-4 bg-slate-100 rounded-xl border border-slate-300 text-xs text-slate-600 flex items-start gap-3 no-print">
+      <div class="p-4 bg-slate-100 rounded-2xl border border-slate-200 text-xs text-slate-600 flex items-start gap-3 no-print">
         <span class="text-xl">🌐</span>
-        <div class="space-y-1">
-          <strong class="text-slate-800">How to Embed this on your Google Site:</strong>
-          <p>
-            1. Open your school Google Site in edit mode.<br>
-            2. Click <strong>Insert > Embed</strong> on the right tool panel.<br>
-            3. Choose <strong>By URL</strong> (using your hosted site URL with <code class="bg-slate-200 px-1 py-0.5 rounded font-mono text-indigo-700">#staff</code> at the end) OR choose <strong>Embed Code</strong> and paste:
+        <div class="space-y-1.5 flex-grow">
+          <strong class="text-slate-800 text-sm">Direct Staff Link & Google Sites Embed Code:</strong>
+          <p class="text-xs">
+            To share directly with your aides so they only see the clean staff view without admin buttons, copy this URL:
           </p>
-          <code class="block bg-slate-200 text-slate-800 p-2 rounded text-[11px] font-mono overflow-x-auto select-all">
-            &lt;iframe src="YOUR_PAGE_URL#staff" width="100%" height="850" frameborder="0" style="border-radius:12px;"&gt;&lt;/iframe&gt;
-          </code>
+          <div class="flex items-center gap-2 max-w-xl">
+            <input type="text" id="directStaffLinkInput" readonly class="bg-white border border-slate-300 text-indigo-900 font-mono text-xs px-3 py-1.5 rounded-lg flex-grow shadow-2xs select-all">
+            <button onclick="copyDirectStaffLink()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg shadow-2xs">
+              Copy Link
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -400,7 +441,7 @@
   </div>
 
   <script>
-    // Complete period definitions matching your school schedule
+    // Periods matching school times
     const PERIODS = [
       { id: 'p0', label: '7:00 - 7:30 AM', name: 'Before School', startMin: 420, endMin: 450 },
       { id: 'p1_prep', label: '7:30 - 8:20 AM', name: 'Arrival / Homeroom', startMin: 450, endMin: 500 },
@@ -430,7 +471,6 @@
     ];
 
     const DEFAULT_SCHEDULE = {
-      // Ms. Romero
       'romero': {
         'p0': { text: 'Off Duty', type: 'off' },
         'p1_prep': { text: 'Bus Arrival Supervision (7:30 - 8:20)', type: 'bus' },
@@ -445,10 +485,9 @@
         'p_dis': { text: 'Bus Duty (2:00 - 3:00 Focus)', type: 'bus' },
         'p_after': { text: 'Off Duty', type: 'off' }
       },
-      // Ms. Reyes
       'reyes': {
         'p0': { text: 'Off Duty', type: 'off' },
-        'p1_prep': { text: 'Exit 2 Entry', type: 'exit' },
+        'p1_prep': { text: 'Exit 2 Entry Support', type: 'exit' },
         'p1': { text: '3rd Floor MS Support', type: 'hall3MS' },
         'p2': { text: 'Admin Support w/ Mr. McKenzie (2nd fl)', type: 'admin' },
         'p3': { text: 'Admin Support w/ Mr. McKenzie (2nd fl)', type: 'admin' },
@@ -460,7 +499,6 @@
         'p_dis': { text: 'Call 2nd fl clear & return cases', type: 'exit' },
         'p_after': { text: 'Off Duty', type: 'off' }
       },
-      // Ms. Roth
       'roth': {
         'p0': { text: 'Off Duty', type: 'off' },
         'p1_prep': { text: 'Auditorium Supervision', type: 'auditorium' },
@@ -475,7 +513,6 @@
         'p_dis': { text: 'Exit 3 Dismissal Supervision', type: 'exit' },
         'p_after': { text: 'Off Duty', type: 'off' }
       },
-      // Ms. Ramales (Early 7:15, brings cases, strictly non-admin)
       'ramales': {
         'p0': { text: 'Main Office Arrival Support', type: 'attend' },
         'p1_prep': { text: 'Bring cases to Cafeteria', type: 'cases' },
@@ -490,7 +527,6 @@
         'p_dis': { text: 'Support Main Hallway Dismissal', type: 'exit' },
         'p_after': { text: 'Off Duty', type: 'off' }
       },
-      // Mr. Barrios (Male - Boys Bathroom in Cafeteria)
       'barrios': {
         'p0': { text: 'Off Duty', type: 'off' },
         'p1_prep': { text: 'Cafeteria / Bring cases to Main', type: 'cases' },
@@ -505,7 +541,6 @@
         'p_dis': { text: 'Main for Yondr with magnet cart', type: 'cases' },
         'p_after': { text: 'Late Duty (until 3:30 PM)', type: 'exit' }
       },
-      // Mr. Diaz (Floater, covers all cafe lunch periods 4-7)
       'diaz': {
         'p0': { text: 'Off Duty', type: 'off' },
         'p1_prep': { text: 'Off Duty', type: 'off' },
@@ -520,7 +555,6 @@
         'p_dis': { text: 'Security Desk / Dismissal', type: 'security' },
         'p_after': { text: 'After School Program (until 5:30 PM)', type: 'detention' }
       },
-      // Mr. Gonzalez (Male - Cafeteria cases + Bathroom)
       'gonzalez': {
         'p0': { text: 'Off Duty', type: 'off' },
         'p1_prep': { text: 'Cafeteria / Bring cases to Main', type: 'cases' },
@@ -535,7 +569,6 @@
         'p_dis': { text: 'Help Clear 3rd Floor Hallway', type: 'exit' },
         'p_after': { text: 'Off Duty', type: 'off' }
       },
-      // Ms. Vuktilaj (9:15 - 2:30, Lunch period 7)
       'vuktilaj': {
         'p0': { text: 'Off Duty', type: 'off' },
         'p1_prep': { text: 'Off Duty', type: 'off' },
@@ -550,7 +583,6 @@
         'p_dis': { text: 'Departure at 2:30 PM', type: 'off' },
         'p_after': { text: 'Off Duty', type: 'off' }
       },
-      // Ms. Cortes (Rosa pairing, Lunch P4)
       'cortes': {
         'p0': { text: 'Off Duty', type: 'off' },
         'p1_prep': { text: 'Exit 2 Entry Support (w/ Ms. Reyes)', type: 'exit' },
@@ -565,7 +597,6 @@
         'p_dis': { text: 'Call 3rd floor clear & return cases', type: 'cases' },
         'p_after': { text: 'Off Duty', type: 'off' }
       },
-      // John Scott (Portocarrero pairing, Lunch P5, Floor P1 ONLY, Tech Support)
       'scott': {
         'p0': { text: 'Off Duty', type: 'off' },
         'p1_prep': { text: 'Tech Support w/ Mr. Ramirez', type: 'tech' },
@@ -585,9 +616,11 @@
     let staffList = JSON.parse(JSON.stringify(INITIAL_STAFF));
     let scheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
 
+    let currentAppMode = 'admin'; // 'admin' | 'staff'
     let activeMainView = 'master'; // 'master' | 'floors' | 'periods' | 'staffsite'
     let currentEditAideId = null;
     let currentEditPeriodId = null;
+    let selectedStaffAideId = null;
 
     function timeToMinutes(tStr) {
       if (!tStr) return 0;
@@ -639,6 +672,7 @@
       const summaryPill = document.getElementById('floorSummaryPill');
       const badgeStatus = document.getElementById('floorBadgeStatus');
 
+      if (!miniMatrix) return;
       miniMatrix.innerHTML = '';
       if (radarBody) radarBody.innerHTML = '';
 
@@ -697,34 +731,28 @@
           const tr = document.createElement('tr');
           tr.className = allCovered ? 'hover:bg-slate-50' : 'bg-rose-50/40 hover:bg-rose-50';
 
-          const renderZoneCell = (list, typeClass, emptyLabel) => {
-            if (list.length > 0) {
-              return `<div class="font-bold text-slate-800 flex flex-wrap gap-1">
-                ${list.map(n => `<span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold shadow-2xs ${typeClass}">${n}</span>`).join('')}
-              </div>`;
-            }
-            return `<span class="inline-flex items-center gap-1 text-[10px] font-black text-rose-600 bg-rose-100 px-2 py-0.5 rounded-md border border-rose-300 animate-pulse">
-              ⚠️ NO AIDE ASSIGNED
-            </span>`;
+          const formatList = (arr, colorClass) => {
+            if (arr.length === 0) return '<span class="text-rose-600 font-extrabold text-[11px] flex items-center gap-1">⚠️ GAP</span>';
+            return arr.map(name => `<span class="inline-block px-2 py-0.5 rounded font-bold ${colorClass} text-[10px] m-0.5">${name}</span>`).join('');
           };
 
           tr.innerHTML = `
-            <td class="py-2.5 px-3.5 bg-slate-50 font-bold border-r border-slate-200">
-              <div class="text-slate-900 font-extrabold">${period.name}</div>
-              <div class="text-[10px] text-indigo-600 font-mono">${period.label}</div>
+            <td class="py-2.5 px-3.5 font-bold text-slate-800">
+              <div>${period.name}</div>
+              <div class="text-[10px] text-slate-500 font-mono">${period.label}</div>
             </td>
-            <td class="py-2 px-3 border-r border-slate-200">${renderZoneCell(floorAides['hall2MS'], 'bg-emerald-100 text-emerald-950 border border-emerald-300', '2nd Fl MS')}</td>
-            <td class="py-2 px-3 border-r border-slate-200">${renderZoneCell(floorAides['hall2HS'], 'bg-teal-100 text-teal-950 border border-teal-300', '2nd Fl HS')}</td>
-            <td class="py-2 px-3 border-r border-slate-200">${renderZoneCell(floorAides['hall3MS'], 'bg-sky-100 text-sky-950 border border-sky-300', '3rd Fl MS')}</td>
-            <td class="py-2 px-3 border-r border-slate-200">${renderZoneCell(floorAides['hall3HS'], 'bg-indigo-100 text-indigo-950 border border-indigo-300', '3rd Fl HS')}</td>
-            <td class="py-2 px-3 text-center">
+            <td class="py-2.5 px-3 border-l border-slate-200">${formatList(floorAides['hall2MS'], 'bg-emerald-100 text-emerald-900 border border-emerald-300')}</td>
+            <td class="py-2.5 px-3 border-l border-slate-200">${formatList(floorAides['hall2HS'], 'bg-teal-100 text-teal-900 border border-teal-300')}</td>
+            <td class="py-2.5 px-3 border-l border-slate-200">${formatList(floorAides['hall3MS'], 'bg-sky-100 text-sky-900 border border-sky-300')}</td>
+            <td class="py-2.5 px-3 border-l border-slate-200">${formatList(floorAides['hall3HS'], 'bg-indigo-100 text-indigo-900 border border-indigo-300')}</td>
+            <td class="py-2.5 px-3 border-l border-slate-200 text-center">
               ${allCovered ? `
-                <span class="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 text-[10px] font-black px-2 py-0.5 rounded-full border border-emerald-300">
-                  ✓ FULL 4/4
+                <span class="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 text-[10px] font-black px-2 py-0.5 rounded-full">
+                  ✓ Full 4/4
                 </span>
               ` : `
-                <span class="inline-flex items-center gap-1 bg-amber-100 text-amber-900 text-[10px] font-black px-2 py-0.5 rounded-full border border-amber-300">
-                  ${periodCoveredCount}/4 Zones
+                <span class="inline-flex items-center gap-1 bg-rose-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
+                  ⚠️ ${4 - periodCoveredCount} Gaps
                 </span>
               `}
             </td>
@@ -734,17 +762,66 @@
       });
 
       const pct = Math.round((coveredSlots / totalSlots) * 100);
-      if (pct === 100) {
-        summaryPill.className = 'font-black text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-md border border-emerald-300';
-        summaryPill.innerText = `100% Floor Coverage (${coveredSlots}/${totalSlots} Slots)`;
-        badgeStatus.className = 'bg-emerald-100 text-emerald-800 text-[9px] font-black px-1.5 py-0.5 rounded';
-        badgeStatus.innerText = '100% Covered';
-      } else {
-        summaryPill.className = 'font-black text-rose-700 bg-rose-100 px-2.5 py-0.5 rounded-md border border-rose-300 animate-pulse';
-        summaryPill.innerText = `${pct}% Floor Coverage (${totalSlots - coveredSlots} Open Floors!)`;
-        badgeStatus.className = 'bg-rose-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded animate-pulse';
-        badgeStatus.innerText = `${totalSlots - coveredSlots} Open Floors`;
+      if (summaryPill) {
+        if (pct === 100) {
+          summaryPill.className = 'font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200';
+          summaryPill.innerText = '100% All Floors Covered';
+        } else {
+          summaryPill.className = 'font-extrabold text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded-md border border-rose-200';
+          summaryPill.innerText = `${pct}% Coverage (${totalSlots - coveredSlots} Open Floor Slots)`;
+        }
       }
+      if (badgeStatus) {
+        badgeStatus.innerText = `${pct}%`;
+        badgeStatus.className = (pct === 100) 
+          ? 'bg-emerald-100 text-emerald-800 text-[9px] font-black px-1.5 py-0.5 rounded' 
+          : 'bg-rose-100 text-rose-800 text-[9px] font-black px-1.5 py-0.5 rounded animate-pulse';
+      }
+    }
+
+    function setAppMode(mode) {
+      currentAppMode = mode;
+
+      const adminWidgets = document.getElementById('adminDashboardWidgets');
+      const adminNav = document.getElementById('adminNavControls');
+      const staffNav = document.getElementById('staffNavControls');
+      const titleBadge = document.getElementById('appHeaderBadge');
+      const headerTitle = document.getElementById('appHeaderTitle');
+
+      if (mode === 'staff') {
+        window.location.hash = 'staff';
+        if (adminWidgets) adminWidgets.classList.add('hidden');
+        if (adminNav) adminNav.classList.add('hidden');
+        if (staffNav) staffNav.classList.remove('hidden');
+        if (titleBadge) {
+          titleBadge.className = 'bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider';
+          titleBadge.innerText = 'Staff Portal (Read-Only)';
+        }
+        if (headerTitle) headerTitle.innerText = 'School Aide Daily Board';
+
+        switchView('staffsite');
+      } else {
+        if (window.location.hash === '#staff') {
+          history.pushState('', document.title, window.location.pathname + window.location.search);
+        }
+        if (adminWidgets) adminWidgets.classList.remove('hidden');
+        if (adminNav) adminNav.classList.remove('hidden');
+        if (staffNav) staffNav.classList.add('hidden');
+        if (titleBadge) {
+          titleBadge.className = 'bg-indigo-100 text-indigo-800 text-[10px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider';
+          titleBadge.innerText = 'Supervisor Admin';
+        }
+        if (headerTitle) headerTitle.innerText = 'School Aide Coverage Hub';
+
+        switchView('master');
+      }
+
+      updateAllDisplays();
+    }
+
+    function promptSupervisorUnlock() {
+      setAppMode('admin');
+      showToast('Switched to Supervisor Admin Mode', 'indigo');
     }
 
     function renderMasterGrid() {
@@ -807,10 +884,15 @@
             }
           }
 
+          const clickAction = (currentAppMode === 'admin') 
+            ? `onclick="openCellModal('${aide.id}', '${period.id}')"` 
+            : '';
+          const cursorClass = (currentAppMode === 'admin') ? 'cursor-pointer hover:ring-2 hover:ring-indigo-500/70' : 'cursor-default';
+
           bodyHTML += `
-            <td onclick="openCellModal('${aide.id}', '${period.id}')"
-                class="py-2 px-2 border-r border-b border-slate-200 text-center cursor-pointer transition-all hover:ring-2 hover:ring-indigo-500/70 select-none ${cellStyle}"
-                title="Click to edit or reassign">
+            <td ${clickAction}
+                class="py-2 px-2 border-r border-b border-slate-200 text-center transition-all select-none ${cursorClass} ${cellStyle}"
+                title="${currentAppMode === 'admin' ? 'Click to edit or reassign' : ''}">
               <div class="text-[11px] leading-tight line-clamp-3">
                 ${content}
               </div>
@@ -908,7 +990,7 @@
 
           const needsMale = vacantSlot.type === 'boysBath' || vacantSlot.text.toLowerCase().includes('boys bathroom');
 
-          // Candidate pool: present, within hours, not on lunch, not locked on bus
+          // Candidate pool: present, within hours, not on lunch, protect Romero morning/afternoon bus duties
           const candidate = staffList.find(c => {
             if (c.absent) return false;
             if (needsMale && c.gender !== 'M') return false;
@@ -920,7 +1002,7 @@
             const cSlot = scheduleData[c.id] && scheduleData[c.id][period.id];
             if (!cSlot) return true;
             if (cSlot.type === 'lunch') return false;
-            if (c.id === 'romero' && (period.id === 'p1_prep' || period.id === 'p8' || period.id === 'p_dis')) return false; // Protect Romero bus duties
+            if (c.id === 'romero' && (period.id === 'p1_prep' || period.id === 'p8' || period.id === 'p_dis')) return false;
 
             // Floater or general hall aides can cover
             if (c.isFloater || cSlot.type === 'walk' || cSlot.type === 'plain' || cSlot.type.startsWith('hall')) {
@@ -954,6 +1036,7 @@
 
     function initPeriodFilterOptions() {
       const select = document.getElementById('periodFilterSelect');
+      if (!select) return;
       select.innerHTML = '<option value="ALL">Show All Periods</option>';
       PERIODS.forEach(p => {
         const opt = document.createElement('option');
@@ -965,7 +1048,10 @@
 
     function renderPeriodBreakdown() {
       const container = document.getElementById('periodCardsGrid');
-      const selectedPeriod = document.getElementById('periodFilterSelect').value;
+      const selectElem = document.getElementById('periodFilterSelect');
+      if (!container || !selectElem) return;
+      
+      const selectedPeriod = selectElem.value;
       container.innerHTML = '';
 
       const filteredPeriods = selectedPeriod === 'ALL' 
@@ -1019,12 +1105,38 @@
 
     function renderStaffPortalView() {
       const tbody = document.getElementById('staffPortalTableBody');
-      const search = (document.getElementById('staffPortalSearch').value || '').toLowerCase();
+      const chipsContainer = document.getElementById('staffQuickPickChips');
+      const directLinkInput = document.getElementById('directStaffLinkInput');
+
+      if (directLinkInput) {
+        directLinkInput.value = window.location.href.split('#')[0] + '#staff';
+      }
+
+      // Quick pick chips
+      if (chipsContainer) {
+        chipsContainer.innerHTML = '';
+        staffList.forEach(aide => {
+          const isSelected = (selectedStaffAideId === aide.id);
+          const chip = document.createElement('button');
+          chip.onclick = () => selectStaffAideForDetail(aide.id);
+          chip.className = `px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+            isSelected 
+              ? 'bg-white text-indigo-900 shadow-md font-black ring-2 ring-indigo-300' 
+              : 'bg-indigo-950/60 hover:bg-white/20 text-indigo-100 border border-indigo-400/30'
+          }`;
+          chip.innerHTML = `
+            <span>${aide.gender === 'M' ? '👨' : '👩'}</span>
+            <span>${aide.name}</span>
+            ${aide.absent ? '<span class="bg-rose-500 text-white text-[9px] px-1 rounded">Out</span>' : ''}
+          `;
+          chipsContainer.appendChild(chip);
+        });
+      }
+
+      if (!tbody) return;
       tbody.innerHTML = '';
 
       staffList.forEach(aide => {
-        if (search && !aide.name.toLowerCase().includes(search)) return;
-
         const isAbsent = aide.absent;
         const p2 = scheduleData[aide.id]['p2']?.text || 'None';
         const p3 = scheduleData[aide.id]['p3']?.text || 'None';
@@ -1047,7 +1159,8 @@
         const pDismiss = scheduleData[aide.id]['p_dis']?.text || 'Regular Departure';
 
         const tr = document.createElement('tr');
-        tr.className = isAbsent ? 'bg-rose-50 text-slate-400' : 'hover:bg-slate-50 transition';
+        tr.className = isAbsent ? 'bg-rose-50 text-slate-400' : 'hover:bg-indigo-50/40 cursor-pointer transition';
+        tr.onclick = () => selectStaffAideForDetail(aide.id);
 
         tr.innerHTML = `
           <td class="py-3 px-4">
@@ -1076,20 +1189,132 @@
           <td class="py-3 px-4 whitespace-nowrap">
             ${isAbsent ? `
               <span class="bg-rose-600 text-white font-extrabold text-[10px] px-2 py-1 rounded-full">
-                ABSENT / COVERED
+                ABSENT TODAY
               </span>
             ` : `
               <span class="bg-emerald-100 text-emerald-800 font-bold text-[10px] px-2 py-1 rounded-full border border-emerald-300">
-                ON DUTY
+                ACTIVE / ON DUTY
               </span>
             `}
           </td>
         `;
         tbody.appendChild(tr);
       });
+
+      if (selectedStaffAideId) {
+        renderIndividualStaffCard(selectedStaffAideId);
+      }
+    }
+
+    function selectStaffAideForDetail(aideId) {
+      selectedStaffAideId = aideId;
+      renderStaffPortalView();
+      renderIndividualStaffCard(aideId);
+    }
+
+    function renderIndividualStaffCard(aideId) {
+      const card = document.getElementById('individualStaffCard');
+      const aide = staffList.find(a => a.id === aideId);
+      if (!aide || !card) return;
+
+      let periodsTimelineHTML = '';
+      PERIODS.forEach(per => {
+        const slot = scheduleData[aide.id][per.id] || { text: 'Available', type: 'plain' };
+        const isLunch = slot.type === 'lunch';
+        const typeStyle = getStyleForType(slot.type);
+
+        periodsTimelineHTML += `
+          <div class="p-2 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs ${isLunch ? 'bg-amber-100 border-amber-300 ring-2 ring-amber-400' : 'bg-slate-50 border-slate-200'}">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-slate-800 min-w-[70px]">${per.name}:</span>
+              <span class="text-[11px] font-mono text-indigo-700">${per.label}</span>
+            </div>
+            <div class="px-2.5 py-1 rounded-lg font-bold text-xs ${typeStyle}">
+              ${slot.text}
+            </div>
+          </div>
+        `;
+      });
+
+      card.innerHTML = `
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-3">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-indigo-600">Personal Daily Schedule</span>
+            <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+              <span>${aide.gender === 'M' ? '👨' : '👩'}</span>
+              <span>${aide.name}</span>
+              <span class="text-xs font-normal text-slate-500 font-mono">(${aide.timeIn} – ${aide.timeOut})</span>
+            </h3>
+          </div>
+          <button onclick="document.getElementById('individualStaffCard').classList.add('hidden')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold px-2.5 py-1 rounded-lg">✕ Close Card</button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+          ${periodsTimelineHTML}
+        </div>
+      `;
+
+      card.classList.remove('hidden');
+      card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function toggleStaffMasterTableView() {
+      const wrapper = document.getElementById('staffFullMasterWrapper');
+      const container = document.getElementById('staffReadOnlyGridContainer');
+      const btn = document.getElementById('btnToggleStaffMasterTable');
+
+      if (wrapper.classList.contains('hidden')) {
+        wrapper.classList.remove('hidden');
+        btn.innerText = 'Hide Period Grid';
+        const masterTable = document.getElementById('masterScheduleTable');
+        container.innerHTML = '';
+        const clone = masterTable.cloneNode(true);
+        clone.querySelectorAll('td').forEach(td => td.removeAttribute('onclick'));
+        container.appendChild(clone);
+      } else {
+        wrapper.classList.add('hidden');
+        btn.innerText = 'Show Full Period-by-Period Grid';
+      }
+    }
+
+    const PRESET_DUTIES = [
+      { text: '2nd Floor MS Support', type: 'hall2MS' },
+      { text: '2nd Floor HS Support', type: 'hall2HS' },
+      { text: '3rd Floor MS Support', type: 'hall3MS' },
+      { text: '3rd Floor HS Support', type: 'hall3HS' },
+      { text: 'Cafeteria Floor Support', type: 'cafe' },
+      { text: 'Cafeteria (Boys Bathroom)', type: 'boysBath' },
+      { text: 'Cafeteria (Girls Bathroom)', type: 'girlsBath' },
+      { text: 'LUNCH', type: 'lunch' },
+      { text: 'Auditorium Supervision', type: 'auditorium' },
+      { text: 'Tech Support w/ Mr. Ramirez', type: 'tech' },
+      { text: 'Attendance Support', type: 'attend' },
+      { text: 'Bus Duty Supervision', type: 'bus' },
+      { text: 'Bring / Return Cases', type: 'cases' },
+      { text: 'Walk The Building', type: 'walk' },
+      { text: 'Exit Supervision', type: 'exit' },
+      { text: 'Security Desk', type: 'security' },
+      { text: 'Off Duty', type: 'off' }
+    ];
+
+    function initPresetButtons() {
+      const container = document.getElementById('presetRoleButtons');
+      if (!container) return;
+      container.innerHTML = '';
+      PRESET_DUTIES.forEach(preset => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'px-2 py-1.5 text-left border rounded-lg bg-slate-50 hover:bg-slate-100 font-medium text-[11px] truncate transition';
+        btn.innerText = preset.text;
+        btn.onclick = () => {
+          document.getElementById('modalCustomDutyInput').value = preset.text;
+          document.getElementById('modalColorSelect').value = preset.type;
+        };
+        container.appendChild(btn);
+      });
     }
 
     function openCellModal(aideId, periodId) {
+      if (currentAppMode !== 'admin') return;
       currentEditAideId = aideId;
       currentEditPeriodId = periodId;
 
@@ -1098,46 +1323,10 @@
       const slot = scheduleData[aideId] && scheduleData[aideId][periodId] ? scheduleData[aideId][periodId] : { text: '', type: 'plain' };
 
       document.getElementById('modalPeriodAideTitle').innerText = `${period.name} (${period.label}) — ${aide.name}`;
-      document.getElementById('modalCustomDutyInput').value = slot.text;
+      document.getElementById('modalCustomDutyInput').value = slot.text || '';
       document.getElementById('modalColorSelect').value = slot.type || 'plain';
 
-      const presetContainer = document.getElementById('presetRoleButtons');
-      const presets = [
-        { label: '🥪 Lunch Break', text: 'LUNCH', type: 'lunch' },
-        { label: '🍽️ Cafeteria Duty', text: 'Cafeteria Floor Support', type: 'cafe' },
-        { label: '🚻 Boys Bathroom (M)', text: 'Cafeteria (Boys Bathroom)', type: 'boysBath' },
-        { label: '🚻 Girls Bathroom', text: 'Cafeteria (Girls Bathroom)', type: 'girlsBath' },
-        { label: '🏢 2nd Fl MS Hall', text: '2nd Floor MS Support', type: 'hall2MS' },
-        { label: '🏢 2nd Fl HS Hall', text: '2nd Floor HS Support', type: 'hall2HS' },
-        { label: '🏢 3rd Fl MS Hall', text: '3rd Floor MS Support', type: 'hall3MS' },
-        { label: '🏢 3rd Fl HS Hall', text: '3rd Floor HS Support', type: 'hall3HS' },
-        { label: '🤝 Admin Support', text: 'Admin Support Pairing', type: 'admin' },
-        { label: '💻 Tech Support', text: 'Tech Support w/ Mr. Ramirez', type: 'tech' },
-        { label: '📝 Attendance', text: 'Attendance Support', type: 'attend' },
-        { label: '🎭 Auditorium', text: 'Auditorium Supervision', type: 'auditorium' },
-        { label: '🚌 Bus Duty', text: 'Bus Duty Supervision', type: 'bus' },
-        { label: '📱 Cell Cases / Yondr', text: 'Cell Phone Cases / Cart', type: 'cases' },
-        { label: '🚶 Walk Building', text: 'Walk the Building Support', type: 'walk' },
-        { label: '🚪 Exit / Dismissal', text: 'Exit Supervision / Clear Halls', type: 'exit' },
-        { label: '👮 Security Desk', text: 'Security Desk Support', type: 'security' },
-        { label: '📦 Package Room', text: 'Package Room / Supplies', type: 'packages' },
-        { label: '⚖️ Detention', text: 'Detention / After-School', type: 'detention' },
-        { label: '⚪ Off Duty', text: 'Off Duty', type: 'off' }
-      ];
-
-      presetContainer.innerHTML = '';
-      presets.forEach(pr => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'p-1.5 rounded-lg border border-slate-200 text-[10px] font-bold text-slate-700 hover:bg-indigo-50 hover:border-indigo-300 text-left truncate transition';
-        btn.innerText = pr.label;
-        btn.onclick = () => {
-          document.getElementById('modalCustomDutyInput').value = pr.text;
-          document.getElementById('modalColorSelect').value = pr.type;
-        };
-        presetContainer.appendChild(btn);
-      });
-
+      initPresetButtons();
       document.getElementById('editCellModal').classList.remove('hidden');
     }
 
@@ -1147,145 +1336,153 @@
 
     function saveCellEdit() {
       if (!currentEditAideId || !currentEditPeriodId) return;
+      const textVal = document.getElementById('modalCustomDutyInput').value.trim();
+      const typeVal = document.getElementById('modalColorSelect').value;
 
-      const text = document.getElementById('modalCustomDutyInput').value.trim() || 'Available';
-      const type = document.getElementById('modalColorSelect').value;
+      scheduleData[currentEditAideId][currentEditPeriodId] = {
+        text: textVal || 'Available',
+        type: typeVal
+      };
 
-      scheduleData[currentEditAideId][currentEditPeriodId] = { text, type };
       closeModal('editCellModal');
-      showToast('Shift duty updated', 'emerald');
+      showToast('Shift updated successfully', 'indigo');
       updateAllDisplays();
     }
 
     function setSlotToVacant() {
       if (!currentEditAideId || !currentEditPeriodId) return;
-      scheduleData[currentEditAideId][currentEditPeriodId] = { text: 'UNASSIGNED (OPEN)', type: 'plain' };
+      scheduleData[currentEditAideId][currentEditPeriodId] = {
+        text: '⚠️ UNASSIGNED',
+        type: 'off'
+      };
       closeModal('editCellModal');
-      showToast('Duty slot set to open', 'slate');
+      showToast('Slot cleared to unassigned', 'rose');
       updateAllDisplays();
     }
 
     function resetDaySchedule() {
-      staffList = JSON.parse(JSON.stringify(INITIAL_STAFF));
+      staffList.forEach(a => a.absent = false);
       scheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
-      showToast('Schedule reset to master defaults!', 'emerald');
+      showToast('Schedule reset to default', 'indigo');
       updateAllDisplays();
     }
 
     function switchView(viewName) {
       activeMainView = viewName;
+      document.getElementById('viewMasterContainer').classList.toggle('hidden', viewName !== 'master');
+      document.getElementById('viewFloorsContainer').classList.toggle('hidden', viewName !== 'floors');
+      document.getElementById('viewPeriodsContainer').classList.toggle('hidden', viewName !== 'periods');
+      document.getElementById('viewStaffSiteContainer').classList.toggle('hidden', viewName !== 'staffsite');
 
-      const masterView = document.getElementById('viewMasterContainer');
-      const floorsView = document.getElementById('viewFloorsContainer');
-      const periodsView = document.getElementById('viewPeriodsContainer');
-      const staffSiteView = document.getElementById('viewStaffSiteContainer');
+      // Update button highlights
+      const btnMap = {
+        'master': document.getElementById('navBtnMaster'),
+        'floors': document.getElementById('navBtnFloors'),
+        'periods': document.getElementById('navBtnPeriods'),
+        'staffsite': document.getElementById('navBtnStaffSite')
+      };
 
-      const btnMaster = document.getElementById('navBtnMaster');
-      const btnFloors = document.getElementById('navBtnFloors');
-      const btnPeriods = document.getElementById('navBtnPeriods');
-      const btnStaffSite = document.getElementById('navBtnStaffSite');
-
-      [btnMaster, btnFloors, btnPeriods, btnStaffSite].forEach(b => {
-        if (b) b.className = 'px-3 py-1.5 rounded-lg hover:text-slate-900 transition font-medium text-xs text-slate-600';
+      Object.keys(btnMap).forEach(k => {
+        const btn = btnMap[k];
+        if (!btn) return;
+        if (k === viewName) {
+          btn.className = 'px-3 py-1.5 rounded-lg bg-white text-indigo-700 shadow-xs font-bold transition flex items-center gap-1.5';
+        } else {
+          btn.className = 'px-3 py-1.5 rounded-lg hover:text-slate-900 transition flex items-center gap-1.5';
+        }
       });
 
-      masterView.classList.add('hidden');
-      floorsView.classList.add('hidden');
-      periodsView.classList.add('hidden');
-      staffSiteView.classList.add('hidden');
-
-      if (viewName === 'master') {
-        masterView.classList.remove('hidden');
-        btnMaster.className = 'px-3 py-1.5 rounded-lg bg-white text-indigo-700 shadow-xs font-bold text-xs transition';
-        renderMasterGrid();
-      } else if (viewName === 'floors') {
-        floorsView.classList.remove('hidden');
-        btnFloors.className = 'px-3 py-1.5 rounded-lg bg-white text-indigo-700 shadow-xs font-bold text-xs transition flex items-center gap-1';
-        renderFloorMonitorAndRadar();
-      } else if (viewName === 'periods') {
-        periodsView.classList.remove('hidden');
-        btnPeriods.className = 'px-3 py-1.5 rounded-lg bg-white text-indigo-700 shadow-xs font-bold text-xs transition';
-        renderPeriodBreakdown();
-      } else if (viewName === 'staffsite') {
-        staffSiteView.classList.remove('hidden');
-        btnStaffSite.className = 'px-3 py-1.5 rounded-lg bg-indigo-600 text-white shadow-xs font-bold text-xs transition flex items-center gap-1';
-        renderStaffPortalView();
-      }
+      if (viewName === 'periods') renderPeriodBreakdown();
+      if (viewName === 'staffsite') renderStaffPortalView();
+      if (viewName === 'floors') renderFloorMonitorAndRadar();
     }
 
-    function showToast(message, color = 'emerald') {
-      const box = document.getElementById('toastBox');
-      const content = document.getElementById('toastContent');
-      const msg = document.getElementById('toastMessage');
-
-      msg.innerText = message;
-      if (color === 'rose') {
-        content.className = 'bg-rose-950 text-rose-100 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-xs font-semibold border border-rose-800';
-      } else if (color === 'indigo') {
-        content.className = 'bg-indigo-950 text-indigo-100 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-xs font-semibold border border-indigo-800';
-      } else {
-        content.className = 'bg-slate-900 text-emerald-400 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-xs font-semibold border border-slate-700';
-      }
-
-      box.classList.remove('translate-y-20', 'opacity-0');
-      setTimeout(() => {
-        box.classList.add('translate-y-20', 'opacity-0');
-      }, 3200);
+    function updateAllDisplays() {
+      renderMasterGrid();
+      renderQuickAbsencePills();
+      renderFloorMonitorAndRadar();
+      if (activeMainView === 'periods') renderPeriodBreakdown();
+      if (activeMainView === 'staffsite') renderStaffPortalView();
     }
 
     function copyShareableUrl() {
+      const url = window.location.href;
+      copyTextToClipboard(url);
+      showToast('Copied schedule link to clipboard!', 'indigo');
+    }
+
+    function copyDirectStaffLink() {
       const url = window.location.href.split('#')[0] + '#staff';
-      const el = document.createElement('textarea');
-      el.value = url;
-      document.body.appendChild(el);
-      el.select();
-      document.execCommand('copy');
-      document.body.removeChild(el);
-      showToast('Staff portal URL copied to clipboard!', 'emerald');
+      copyTextToClipboard(url);
+      showToast('Copied direct Staff Portal link!', 'emerald');
+    }
+
+    function copyTextToClipboard(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+      } catch (err) {
+        console.error('Copy failed', err);
+      }
+      document.body.removeChild(textarea);
     }
 
     function exportToCSV() {
       let csv = 'Period,Time,' + staffList.map(a => `"${a.name}"`).join(',') + '\n';
       PERIODS.forEach(p => {
-        let row = [`"${p.name}"`, `"${p.label}"`];
-        staffList.forEach(a => {
-          const val = scheduleData[a.id] && scheduleData[a.id][p.id] ? scheduleData[a.id][p.id].text : 'Available';
-          row.push(`"${val.replace(/"/g, '""')}"`);
-        });
+        const row = [
+          `"${p.name}"`,
+          `"${p.label}"`,
+          ...staffList.map(a => `"${scheduleData[a.id][p.id]?.text || ''}"`)
+        ];
         csv += row.join(',') + '\n';
       });
 
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `School_Aide_Coverage_${new Date().toISOString().slice(0, 10)}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      showToast('Schedule exported to CSV!', 'emerald');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `aide_coverage_schedule_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('CSV export downloaded', 'emerald');
     }
 
-    function updateAllDisplays() {
-      renderQuickAbsencePills();
-      renderFloorMonitorAndRadar();
-      if (activeMainView === 'master') renderMasterGrid();
-      if (activeMainView === 'floors') renderFloorMonitorAndRadar();
-      if (activeMainView === 'periods') renderPeriodBreakdown();
-      if (activeMainView === 'staffsite') renderStaffPortalView();
+    function showToast(msg, colorScheme = 'indigo') {
+      const toast = document.getElementById('toastBox');
+      const msgEl = document.getElementById('toastMessage');
+      if (!toast || !msgEl) return;
+
+      msgEl.innerText = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
     }
 
     window.onload = function() {
       const d = new Date();
       const options = { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' };
-      document.getElementById('headerTodayDate').innerText = d.toLocaleDateString('en-US', options);
+      const dateEl = document.getElementById('headerTodayDate');
+      if (dateEl) dateEl.innerText = d.toLocaleDateString('en-US', options);
 
       initPeriodFilterOptions();
 
+      // Automatically launch Staff Portal if URL ends with #staff
       if (window.location.hash === '#staff') {
-        switchView('staffsite');
+        setAppMode('staff');
       } else {
-        switchView('master');
+        setAppMode('admin');
       }
 
       updateAllDisplays();
