@@ -571,15 +571,16 @@
     const DEFAULT_SCHEDULE = {
       'romero': {
         'p0': { text: 'Off Duty', type: 'off' },
-        'p1_prep': { text: 'Bus Arrival Supervision (7:30 - 8:20)', type: 'bus' },
+        'p1_prep': { text: 'Bus Arrival Supervision (7:30 - 8:15)', type: 'bus' },
         'p1': { text: 'Attendance Support w/ Ms. Flack', type: 'attend' },
+        'p_announce': { text: 'Attendance / Hall Transition', type: 'attend' },
         'p2': { text: 'Admin Support w/ Ms. Tobin (3rd fl)', type: 'admin' },
         'p3': { text: 'Admin Support w/ Ms. Tobin (3rd fl)', type: 'admin' },
         'p4': { text: 'Cafeteria Floor Support', type: 'cafe' },
         'p5': { text: '2nd Floor MS Support', type: 'hall2MS' },
         'p6': { text: 'LUNCH', type: 'lunch' },
         'p7': { text: '3rd Floor MS Support', type: 'hall3MS' },
-        'p8': { text: 'Bus Duty Prep / Cell Case Drop', type: 'cases' },
+        'p8': { text: 'Bus Duty (2:00 - Dismissal)', type: 'bus' },
         'p_dis': { text: 'Bus Duty (2:00 - 3:00 Focus)', type: 'bus' },
         'p_after': { text: 'Off Duty', type: 'off' }
       },
@@ -587,6 +588,7 @@
         'p0': { text: 'Off Duty', type: 'off' },
         'p1_prep': { text: 'Exit 2 Entry Support', type: 'exit' },
         'p1': { text: '3rd Floor MS Support', type: 'hall3MS' },
+        'p_announce': { text: '3rd Floor MS / Transition', type: 'hall3MS' },
         'p2': { text: 'Admin Support w/ Mr. McKenzie (2nd fl)', type: 'admin' },
         'p3': { text: 'Admin Support w/ Mr. McKenzie (2nd fl)', type: 'admin' },
         'p4': { text: '3rd Floor MS Support', type: 'hall3MS' },
@@ -601,6 +603,7 @@
         'p0': { text: 'Off Duty', type: 'off' },
         'p1_prep': { text: 'Auditorium Supervision', type: 'auditorium' },
         'p1': { text: 'Auditorium Supervision', type: 'auditorium' },
+        'p_announce': { text: 'Auditorium / Transition', type: 'auditorium' },
         'p2': { text: 'Admin Support w/ Mr. Gooden (3rd fl)', type: 'admin' },
         'p3': { text: 'Admin Support w/ Mr. Gooden (3rd fl)', type: 'admin' },
         'p4': { text: 'Cafeteria (Girls Bathroom)', type: 'girlsBath' },
@@ -612,9 +615,10 @@
         'p_after': { text: 'Off Duty', type: 'off' }
       },
       'ramales': {
-        'p0': { text: 'Main Office Arrival Support', type: 'attend' },
+        'p0': { text: 'Main Office Arrival Support', type: 'mainOffice' },
         'p1_prep': { text: 'Bring cases to Cafeteria', type: 'cases' },
         'p1': { text: '3rd Floor HS Hallway Support', type: 'hall3HS' },
+        'p_announce': { text: '3rd Floor HS Support', type: 'hall3HS' },
         'p2': { text: '2nd Floor HS Hallway Support', type: 'hall2HS' },
         'p3': { text: '2nd Floor HS Hallway Support', type: 'hall2HS' },
         'p4': { text: '2nd Floor MS Hallway Support', type: 'hall2MS' },
@@ -629,6 +633,7 @@
         'p0': { text: 'Off Duty', type: 'off' },
         'p1_prep': { text: 'Cafeteria / Bring cases to Main', type: 'cases' },
         'p1': { text: 'Cafeteria / Return cases to Main', type: 'cases' },
+        'p_announce': { text: '2nd Floor MS Hallway', type: 'hall2MS' },
         'p2': { text: '2nd Floor MS Support', type: 'hall2MS' },
         'p3': { text: '2nd Floor MS Support', type: 'hall2MS' },
         'p4': { text: 'Cafeteria (Boys Bathroom)', type: 'boysBath' },
@@ -643,6 +648,7 @@
         'p0': { text: 'Off Duty', type: 'off' },
         'p1_prep': { text: 'Off Duty', type: 'off' },
         'p1': { text: 'Off Duty (Arrives 9:30 AM)', type: 'off' },
+        'p_announce': { text: 'Off Duty (Arrives 9:30 AM)', type: 'off' },
         'p2': { text: '3rd Floor MS Floater Walk', type: 'walk' },
         'p3': { text: '3rd Floor MS Floater Walk', type: 'walk' },
         'p4': { text: 'Cafeteria (Floor / Boys Bath)', type: 'boysBath' },
@@ -657,6 +663,7 @@
         'p0': { text: 'Off Duty', type: 'off' },
         'p1_prep': { text: 'Cafeteria / Bring cases to Main', type: 'cases' },
         'p1': { text: 'Cafeteria / Return cases to Main', type: 'cases' },
+        'p_announce': { text: '3rd Floor MS Support', type: 'hall3MS' },
         'p2': { text: '3rd Floor MS Support', type: 'hall3MS' },
         'p3': { text: '3rd Floor MS Support', type: 'hall3MS' },
         'p4': { text: '3rd Floor HS Support', type: 'hall3HS' },
@@ -671,6 +678,7 @@
         'p0': { text: 'Off Duty', type: 'off' },
         'p1_prep': { text: 'Off Duty', type: 'off' },
         'p1': { text: 'Off Duty (Arrives 9:15 AM)', type: 'off' },
+        'p_announce': { text: 'Off Duty (Arrives 9:15 AM)', type: 'off' },
         'p2': { text: '2nd Floor MS Support', type: 'hall2MS' },
         'p3': { text: '2nd Floor MS Support', type: 'hall2MS' },
         'p4': { text: '2nd Floor HS Support', type: 'hall2HS' },
@@ -685,6 +693,7 @@
         'p0': { text: 'Off Duty', type: 'off' },
         'p1_prep': { text: 'Exit 2 Entry Support (w/ Ms. Reyes)', type: 'exit' },
         'p1': { text: '2nd Floor MS Support', type: 'hall2MS' },
+        'p_announce': { text: '2nd Floor MS / Transition', type: 'hall2MS' },
         'p2': { text: 'Admin Support w/ Ms. Rosa', type: 'admin' },
         'p3': { text: 'Admin Support w/ Ms. Rosa', type: 'admin' },
         'p4': { text: 'LUNCH', type: 'lunch' },
@@ -699,6 +708,7 @@
         'p0': { text: 'Off Duty', type: 'off' },
         'p1_prep': { text: 'Tech Support w/ Mr. Ramirez', type: 'tech' },
         'p1': { text: '2nd Floor HS Hallway Help', type: 'hall2HS' },
+        'p_announce': { text: '2nd Floor HS / Transition', type: 'hall2HS' },
         'p2': { text: 'Admin Support w/ Ms. Portocarrero', type: 'admin' },
         'p3': { text: 'Admin Support w/ Ms. Portocarrero', type: 'admin' },
         'p4': { text: 'Tech Support w/ Mr. Ramirez', type: 'tech' },
@@ -768,6 +778,8 @@
         case 'admin': return 'bg-purple-200 text-purple-950 font-bold border-l-4 border-l-purple-600';
         case 'tech': return 'bg-cyan-200 text-cyan-950 font-bold border-l-4 border-l-cyan-600';
         case 'attend': return 'bg-red-200 text-red-950 font-bold border-l-4 border-l-red-500';
+        case 'mainOffice': return 'bg-blue-100 text-blue-950 font-bold border-l-4 border-l-blue-500';
+        case 'utility': return 'bg-zinc-200 text-zinc-900 font-bold border-l-4 border-l-zinc-500';
         case 'auditorium': return 'bg-fuchsia-200 text-fuchsia-950 font-bold border-l-4 border-l-fuchsia-600';
         case 'bus': return 'bg-yellow-300 text-yellow-950 font-extrabold border-l-4 border-l-yellow-600';
         case 'cases': return 'bg-lime-200 text-lime-950 font-bold border-l-4 border-l-lime-600';
@@ -1527,22 +1539,45 @@
     }
 
     const PRESET_DUTIES = [
+      // 4 Main Floors
       { text: '2nd Floor MS Support', type: 'hall2MS' },
       { text: '2nd Floor HS Support', type: 'hall2HS' },
       { text: '3rd Floor MS Support', type: 'hall3MS' },
       { text: '3rd Floor HS Support', type: 'hall3HS' },
+      // Cafeteria & Lunch
       { text: 'Cafeteria Floor Support', type: 'cafe' },
       { text: 'Cafeteria (Boys Bathroom)', type: 'boysBath' },
       { text: 'Cafeteria (Girls Bathroom)', type: 'girlsBath' },
       { text: 'LUNCH', type: 'lunch' },
-      { text: 'Auditorium Supervision', type: 'auditorium' },
-      { text: 'Tech Support w/ Mr. Ramirez', type: 'tech' },
-      { text: 'Attendance Support', type: 'attend' },
-      { text: 'Bus Duty Supervision', type: 'bus' },
-      { text: 'Bring / Return Cases', type: 'cases' },
-      { text: 'Walk The Building', type: 'walk' },
-      { text: 'Exit Supervision', type: 'exit' },
+      // Arrival & Exits
+      { text: 'Bus Arrival Supervision (7:30 - 8:15)', type: 'bus' },
+      { text: 'Exit 2 Entry Support', type: 'exit' },
+      { text: 'Exit 3 Dismissal Supervision', type: 'exit' },
+      { text: 'Bus Duty (2:00 - Dismissal)', type: 'bus' },
       { text: 'Security Desk', type: 'security' },
+      // Admin / Teacher Pairings
+      { text: 'Admin Support w/ Ms. Tobin (3rd fl)', type: 'admin' },
+      { text: 'Admin Support w/ Mr. McKenzie (2nd fl)', type: 'admin' },
+      { text: 'Admin Support w/ Mr. Gooden (3rd fl)', type: 'admin' },
+      { text: 'Admin Support w/ Ms. Rosa', type: 'admin' },
+      { text: 'Admin Support w/ Ms. Portocarrero', type: 'admin' },
+      // Tech, Attendance, Auditorium, Office
+      { text: 'Tech Support w/ Mr. Ramirez', type: 'tech' },
+      { text: 'Attendance Support w/ Ms. Flack', type: 'attend' },
+      { text: 'Attendance 3rd floor', type: 'attend' },
+      { text: 'Main Office Support', type: 'mainOffice' },
+      { text: 'Auditorium Supervision', type: 'auditorium' },
+      // Cases, Logistics, Utility
+      { text: 'Bring cases to Cafeteria', type: 'cases' },
+      { text: 'Cafeteria / Return cases to Main', type: 'cases' },
+      { text: 'Drop cellphone cases (2nd fl)', type: 'cases' },
+      { text: 'Drop off cases 3rd floor MS', type: 'cases' },
+      { text: 'Main for Yondr with magnet cart', type: 'cases' },
+      { text: 'Walk The Building', type: 'walk' },
+      { text: 'Help Clear Hallway', type: 'exit' },
+      { text: 'Utility (where needed)', type: 'utility' },
+      { text: 'Package Room / Supplies', type: 'packages' },
+      { text: 'Detention / After School', type: 'detention' },
       { text: 'Off Duty', type: 'off' }
     ];
 
