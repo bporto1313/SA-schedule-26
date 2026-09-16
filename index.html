@@ -99,6 +99,12 @@
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
           Print
         </button>
+        <button onclick="openChangePinModal()" title="Change supervisor PIN code" class="px-2.5 py-1.5 text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg border border-slate-300 transition flex items-center gap-1">
+          <span>⚙️ PIN</span>
+        </button>
+        <button onclick="lockToStaffMode()" title="Lock schedule to Staff View" class="px-2.5 py-1.5 text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg transition flex items-center gap-1">
+          <span>🔒 Lock</span>
+        </button>
       </div>
 
       <!-- Navigation for Staff Portal Mode -->
@@ -388,52 +394,85 @@
         <button onclick="closeModal('editCellModal')" class="w-7 h-7 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-600 font-bold text-xs">✕</button>
       </div>
 
-      <div class="p-4 overflow-y-auto space-y-3 flex-grow text-xs">
-        <div>
-          <label class="block text-slate-700 font-bold mb-1">Preset Coverage Roles:</label>
-          <div class="grid grid-cols-2 gap-1.5" id="presetRoleButtons">
-            <!-- Preset buttons injected via JS -->
-          </div>
+  <!-- Supervisor PIN Authentication Modal -->
+  <div id="supervisorPinModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl border border-slate-200 overflow-hidden transform transition-all p-6 text-center">
+      <div class="w-12 h-12 bg-indigo-100 text-indigo-700 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl font-bold shadow-inner">
+        🔒
+      </div>
+      <h3 class="text-base font-black text-slate-900">Supervisor Security Gate</h3>
+      <p class="text-xs text-slate-500 mt-1">Please enter your supervisor authorization PIN to access master editing controls.</p>
+
+      <div class="mt-5 space-y-3">
+        <div class="relative">
+          <input 
+            type="password" 
+            id="supervisorPinInput" 
+            maxlength="8" 
+            placeholder="••••" 
+            autocomplete="off"
+            class="w-full text-center tracking-[0.4em] font-mono text-xl py-2.5 px-4 bg-slate-50 border-2 border-slate-300 rounded-xl focus:border-indigo-600 focus:bg-white focus:outline-none transition"
+            onkeydown="if(event.key==='Enter') verifySupervisorPin()"
+          />
+        </div>
+        
+        <!-- Error alert message container -->
+        <p id="pinErrorMessage" class="hidden text-rose-600 text-xs font-bold animate-pulse flex items-center justify-center gap-1">
+          <span>⚠️</span> <span>Incorrect PIN. Please try again.</span>
+        </p>
+
+        <!-- Quick Numpad for Mobile / Touchscreens -->
+        <div class="grid grid-cols-3 gap-1.5 max-w-[200px] mx-auto pt-1">
+          <button type="button" onclick="appendPinDigit('1')" class="py-2 bg-slate-100 hover:bg-slate-200 font-bold text-sm rounded-lg text-slate-800">1</button>
+          <button type="button" onclick="appendPinDigit('2')" class="py-2 bg-slate-100 hover:bg-slate-200 font-bold text-sm rounded-lg text-slate-800">2</button>
+          <button type="button" onclick="appendPinDigit('3')" class="py-2 bg-slate-100 hover:bg-slate-200 font-bold text-sm rounded-lg text-slate-800">3</button>
+          <button type="button" onclick="appendPinDigit('4')" class="py-2 bg-slate-100 hover:bg-slate-200 font-bold text-sm rounded-lg text-slate-800">4</button>
+          <button type="button" onclick="appendPinDigit('5')" class="py-2 bg-slate-100 hover:bg-slate-200 font-bold text-sm rounded-lg text-slate-800">5</button>
+          <button type="button" onclick="appendPinDigit('6')" class="py-2 bg-slate-100 hover:bg-slate-200 font-bold text-sm rounded-lg text-slate-800">6</button>
+          <button type="button" onclick="appendPinDigit('7')" class="py-2 bg-slate-100 hover:bg-slate-200 font-bold text-sm rounded-lg text-slate-800">7</button>
+          <button type="button" onclick="appendPinDigit('8')" class="py-2 bg-slate-100 hover:bg-slate-200 font-bold text-sm rounded-lg text-slate-800">8</button>
+          <button type="button" onclick="appendPinDigit('9')" class="py-2 bg-slate-100 hover:bg-slate-200 font-bold text-sm rounded-lg text-slate-800">9</button>
+          <button type="button" onclick="clearPinInput()" class="py-2 bg-slate-200 hover:bg-slate-300 font-bold text-xs rounded-lg text-slate-700">C</button>
+          <button type="button" onclick="appendPinDigit('0')" class="py-2 bg-slate-100 hover:bg-slate-200 font-bold text-sm rounded-lg text-slate-800">0</button>
+          <button type="button" onclick="backspacePinDigit()" class="py-2 bg-slate-200 hover:bg-slate-300 font-bold text-xs rounded-lg text-slate-700">⌫</button>
         </div>
 
-        <div class="pt-2">
-          <label class="block text-slate-700 font-bold mb-1">Or Custom Duty Description:</label>
-          <input type="text" id="modalCustomDutyInput" placeholder="e.g. 2nd Floor MS Support" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
-        </div>
-
-        <div>
-          <label class="block text-slate-700 font-bold mb-1">Color Category Tag:</label>
-          <select id="modalColorSelect" class="w-full px-3 py-2 border border-slate-300 rounded-lg font-medium">
-            <option value="lunch">🥪 Lunch (Gold Yellow)</option>
-            <option value="cafe">🍽️ Cafeteria (Warm Orange)</option>
-            <option value="boysBath">🚻 Boys Bathroom (Blue)</option>
-            <option value="girlsBath">🚻 Girls Bathroom (Rose)</option>
-            <option value="hall2MS">🏢 2nd Floor MS (Mint Emerald)</option>
-            <option value="hall2HS">🏢 2nd Floor HS (Teal)</option>
-            <option value="hall3MS">🏢 3rd Floor MS (Sky Blue)</option>
-            <option value="hall3HS">🏢 3rd Floor HS (Indigo)</option>
-            <option value="admin">🤝 Admin / Teacher Support (Purple)</option>
-            <option value="tech">💻 Tech Support (Electric Cyan)</option>
-            <option value="attend">📝 Attendance / Main (Coral)</option>
-            <option value="auditorium">🎭 Auditorium Supervision (Plum)</option>
-            <option value="bus">🚌 Bus Duty / Bussing (School Bus Yellow)</option>
-            <option value="cases">📱 Cellphone Cases / Yondr (Lime)</option>
-            <option value="walk">🚶 Walk The Building (Hot Pink)</option>
-            <option value="exit">🚪 Exit Doors / Clear Halls (Steel Slate)</option>
-            <option value="security">👮 Security Desk (Violet)</option>
-            <option value="packages">📦 Package Room / Supplies (Caramel)</option>
-            <option value="detention">⚖️ Detention / After-School (Crimson)</option>
-            <option value="off">⚪ Off Duty (Muted Gray)</option>
-            <option value="plain">⚪ General / Normal</option>
-          </select>
-        </div>
-
-        <div class="pt-2 flex justify-between gap-2 border-t border-slate-100">
-          <button onclick="setSlotToVacant()" class="px-3 py-2 text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg font-bold border border-rose-200">
-            Clear / Unassigned
+        <div class="flex items-center gap-2 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeModal('supervisorPinModal')" class="w-1/2 py-2.5 bg-slate-100 hover:bg-slate-200 font-bold text-xs text-slate-700 rounded-xl transition">
+            Cancel
           </button>
-          <button onclick="saveCellEdit()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold">
-            Save Changes
+          <button type="button" onclick="verifySupervisorPin()" class="w-1/2 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition">
+            Unlock
+          </button>
+        </div>
+        <p class="text-[10px] text-slate-400">Default PIN is <span class="font-mono font-bold text-slate-600">1234</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change PIN Modal -->
+  <div id="changePinModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl border border-slate-200 overflow-hidden p-6 text-left">
+      <h3 class="text-base font-black text-slate-900">Change Supervisor PIN</h3>
+      <p class="text-xs text-slate-500 mt-1">Set a new numeric PIN to protect your admin mode from unauthorized staff changes.</p>
+
+      <div class="mt-4 space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">New PIN Code:</label>
+          <input type="password" id="newPinInput" maxlength="8" placeholder="e.g. 5821" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-center font-mono text-base tracking-widest focus:ring-2 focus:ring-indigo-500 outline-none">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Confirm New PIN:</label>
+          <input type="password" id="confirmPinInput" maxlength="8" placeholder="e.g. 5821" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-center font-mono text-base tracking-widest focus:ring-2 focus:ring-indigo-500 outline-none">
+        </div>
+        <p id="changePinError" class="hidden text-rose-600 font-bold text-[11px]"></p>
+
+        <div class="flex items-center gap-2 pt-3 border-t border-slate-100">
+          <button onclick="closeModal('changePinModal')" class="w-1/2 py-2 bg-slate-100 hover:bg-slate-200 font-bold text-slate-700 rounded-xl">
+            Cancel
+          </button>
+          <button onclick="saveNewSupervisorPin()" class="w-1/2 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md">
+            Save PIN
           </button>
         </div>
       </div>
@@ -621,6 +660,7 @@
     let currentEditAideId = null;
     let currentEditPeriodId = null;
     let selectedStaffAideId = null;
+    let supervisorPin = '1234';
 
     function timeToMinutes(tStr) {
       if (!tStr) return 0;
@@ -820,8 +860,91 @@
     }
 
     function promptSupervisorUnlock() {
-      setAppMode('admin');
-      showToast('Switched to Supervisor Admin Mode', 'indigo');
+      const pinModal = document.getElementById('supervisorPinModal');
+      const pinInput = document.getElementById('supervisorPinInput');
+      const errorMsg = document.getElementById('pinErrorMessage');
+      
+      if (pinInput) pinInput.value = '';
+      if (errorMsg) errorMsg.classList.add('hidden');
+      if (pinModal) pinModal.classList.remove('hidden');
+
+      setTimeout(() => {
+        if (pinInput) pinInput.focus();
+      }, 150);
+    }
+
+    function appendPinDigit(digit) {
+      const input = document.getElementById('supervisorPinInput');
+      if (input && input.value.length < 8) {
+        input.value += digit;
+      }
+    }
+
+    function clearPinInput() {
+      const input = document.getElementById('supervisorPinInput');
+      if (input) input.value = '';
+    }
+
+    function backspacePinDigit() {
+      const input = document.getElementById('supervisorPinInput');
+      if (input && input.value.length > 0) {
+        input.value = input.value.slice(0, -1);
+      }
+    }
+
+    function verifySupervisorPin() {
+      const input = document.getElementById('supervisorPinInput');
+      const errorMsg = document.getElementById('pinErrorMessage');
+      const enteredPin = input ? input.value.trim() : '';
+
+      if (enteredPin === supervisorPin) {
+        closeModal('supervisorPinModal');
+        setAppMode('admin');
+        showToast('🔓 Supervisor Access Granted', 'indigo');
+      } else {
+        if (errorMsg) errorMsg.classList.remove('hidden');
+        if (input) {
+          input.value = '';
+          input.classList.add('border-rose-500', 'animate-shake');
+          setTimeout(() => input.classList.remove('border-rose-500', 'animate-shake'), 1000);
+        }
+      }
+    }
+
+    function lockToStaffMode() {
+      setAppMode('staff');
+      showToast('🔒 Locked in Staff Mode', 'rose');
+    }
+
+    function openChangePinModal() {
+      const modal = document.getElementById('changePinModal');
+      const err = document.getElementById('changePinError');
+      document.getElementById('newPinInput').value = '';
+      document.getElementById('confirmPinInput').value = '';
+      if (err) err.classList.add('hidden');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function saveNewSupervisorPin() {
+      const newPin = document.getElementById('newPinInput').value.trim();
+      const confirmPin = document.getElementById('confirmPinInput').value.trim();
+      const err = document.getElementById('changePinError');
+
+      if (!newPin || newPin.length < 3) {
+        err.innerText = 'PIN must be at least 3 digits.';
+        err.classList.remove('hidden');
+        return;
+      }
+
+      if (newPin !== confirmPin) {
+        err.innerText = 'PIN confirmation does not match.';
+        err.classList.remove('hidden');
+        return;
+      }
+
+      supervisorPin = newPin;
+      closeModal('changePinModal');
+      showToast('New Supervisor PIN saved successfully!', 'emerald');
     }
 
     function renderMasterGrid() {
