@@ -15,28 +15,28 @@
     body {
       font-family: 'Inter', sans-serif;
     }
-    /* Duty Category Color Styles */
+    /* Distinct Duty Category Color Badges */
     .duty-lunch { background-color: #fef08a !important; color: #854d0e !important; border-left: 4px solid #eab308 !important; }
     .duty-cafe { background-color: #ffedd5 !important; color: #9a3412 !important; border-left: 4px solid #f97316 !important; }
-    .duty-boys-bath { background-color: #dbeafe !important; color: #1e40af !important; border-left: 4px solid #3b82f6 !important; }
-    .duty-girls-bath { background-color: #ffe4e6 !important; color: #9f1239 !important; border-left: 4px solid #f43f5e !important; }
-    .duty-floor-2ms { background-color: #d1fae5 !important; color: #065f46 !important; border-left: 4px solid #10b981 !important; }
-    .duty-floor-2hs { background-color: #ccfbf1 !important; color: #115e59 !important; border-left: 4px solid #14b8a6 !important; }
+    .duty-boys-bath { background-color: #dbeafe !important; color: #1e40af !important; border-left: 4px solid #2563eb !important; }
+    .duty-girls-bath { background-color: #ffe4e6 !important; color: #9f1239 !important; border-left: 4px solid #e11d48 !important; }
+    .duty-floor-2ms { background-color: #d1fae5 !important; color: #065f46 !important; border-left: 4px solid #059669 !important; }
+    .duty-floor-2hs { background-color: #ccfbf1 !important; color: #115e59 !important; border-left: 4px solid #0d9488 !important; }
     .duty-floor-3ms { background-color: #e0f2fe !important; color: #075985 !important; border-left: 4px solid #0284c7 !important; }
-    .duty-floor-3hs { background-color: #e0e7ff !important; color: #3730a3 !important; border-left: 4px solid #6366f1 !important; }
-    .duty-admin { background-color: #f3e8ff !important; color: #6b21a8 !important; border-left: 4px solid #a855f7 !important; }
-    .duty-tech { background-color: #cffafe !important; color: #155e75 !important; border-left: 4px solid #06b6d4 !important; }
-    .duty-attendance { background-color: #fee2e2 !important; color: #991b1b !important; border-left: 4px solid #ef4444 !important; }
-    .duty-auditorium { background-color: #fae8ff !important; color: #86198f !important; border-left: 4px solid #d946ef !important; }
+    .duty-floor-3hs { background-color: #e0e7ff !important; color: #3730a3 !important; border-left: 4px solid #4f46e5 !important; }
+    .duty-admin { background-color: #f3e8ff !important; color: #6b21a8 !important; border-left: 4px solid #9333ea !important; }
+    .duty-tech { background-color: #cffafe !important; color: #155e75 !important; border-left: 4px solid #0891b2 !important; }
+    .duty-attendance { background-color: #fee2e2 !important; color: #991b1b !important; border-left: 4px solid #dc2626 !important; }
+    .duty-auditorium { background-color: #fae8ff !important; color: #86198f !important; border-left: 4px solid #c026d3 !important; }
     .duty-bus { background-color: #fef9c3 !important; color: #713f12 !important; border-left: 4px solid #ca8a04 !important; }
-    .duty-cases { background-color: #ecfccb !important; color: #3f6212 !important; border-left: 4px solid #84cc16 !important; }
-    .duty-walk { background-color: #fce7f3 !important; color: #9d174d !important; border-left: 4px solid #ec4899 !important; }
-    .duty-clear { background-color: #f1f5f9 !important; color: #334155 !important; border-left: 4px solid #64748b !important; }
-    .duty-security { background-color: #ede9fe !important; color: #4c1d95 !important; border-left: 4px solid #7c3aed !important; }
-    .duty-plain { background-color: #ffffff; color: #334155; }
-    .duty-off { background-color: #f8fafc; color: #94a3b8; font-style: italic; }
+    .duty-cases { background-color: #ecfccb !important; color: #3f6212 !important; border-left: 4px solid #65a30d !important; }
+    .duty-walk { background-color: #fce7f3 !important; color: #9d174d !important; border-left: 4px solid #db2777 !important; }
+    .duty-clear { background-color: #f1f5f9 !important; color: #334155 !important; border-left: 4px solid #475569 !important; }
+    .duty-security { background-color: #ede9fe !important; color: #4c1d95 !important; border-left: 4px solid #6d28d9 !important; }
+    .duty-plain { background-color: #f8fafc; color: #334155; border-left: 4px solid #cbd5e1; }
+    .duty-off { background-color: #f1f5f9; color: #94a3b8; font-style: italic; border-left: 4px solid #cbd5e1; }
 
-    /* Custom Scrollbar for Grid */
+    /* Custom Smooth Scrollbar */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -157,7 +157,7 @@
     <div id="legendCard" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-3 overflow-x-auto">
       <div class="flex items-center justify-between gap-2 mb-2">
         <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Duty Color Key &amp; Building Zones</h3>
-        <span class="text-[11px] text-slate-400">Click any grid cell to reassign or adjust</span>
+        <span class="text-[11px] text-slate-400">Click any cell to edit or reassign</span>
       </div>
       <div class="flex items-center gap-2 flex-wrap text-xs">
         <span class="duty-lunch px-2 py-0.5 rounded font-bold">🥪 Lunch</span>
@@ -180,10 +180,9 @@
       </div>
     </div>
 
-    <!-- TAB 1: MASTER SCHEDULE GRID -->
     <div id="tabMaster" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse min-w-[1000px]">
+        <table class="w-full text-left border-collapse min-w-[1050px]">
           <thead>
             <tr class="bg-slate-900 text-white text-xs uppercase tracking-wider font-bold">
               <th class="p-3 sticky left-0 bg-slate-900 z-20 w-44 shadow-md">School Aide</th>
@@ -230,7 +229,6 @@
       </div>
     </div>
 
-    <!-- TAB 2: FLOOR RADAR VIEW -->
     <div id="tabFloors" class="hidden space-y-4">
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
         <h3 class="text-sm font-bold text-slate-800 mb-1">🏢 Continuous 4-Zone Floor Radar</h3>
@@ -242,7 +240,6 @@
       </div>
     </div>
 
-    <!-- TAB 3: STAFF PORTAL VIEW -->
     <div id="tabStaff" class="hidden space-y-4">
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
@@ -268,8 +265,6 @@
 
   </main>
 
-
-  <!-- Modal 1: Edit Cell Shift Dialog -->
   <div id="editCellModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
     <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
       <div class="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
@@ -350,7 +345,6 @@
     </div>
   </div>
 
-  <!-- Modal 2: Supervisor PIN Unlock -->
   <div id="supervisorPinModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
     <div class="bg-white w-full max-w-xs rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
       <div class="p-4 border-b border-slate-100 bg-indigo-50 flex items-center justify-between">
@@ -389,7 +383,6 @@
     </div>
   </div>
 
-  <!-- Modal 3: Add New Staff Member -->
   <div id="addStaffModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
     <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
       <div class="p-4 border-b border-slate-100 bg-emerald-50 flex items-center justify-between">
@@ -459,7 +452,6 @@
     </div>
   </div>
 
-  <!-- Modal 4: Late Arrival / Early Departure -->
   <div id="adjustHoursModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
     <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
       <div class="p-4 border-b border-slate-100 bg-amber-50 flex items-center justify-between">
@@ -527,7 +519,6 @@
     </div>
   </div>
 
-  <!-- Modal 5: Backup & Restore -->
   <div id="backupRestoreModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
     <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col">
       <div class="p-4 border-b border-slate-100 bg-sky-50 flex items-center justify-between">
@@ -751,19 +742,52 @@
       }
     };
 
-    // --- STREAMING_CHUNK:Managing Application State and Storage Persistence ---
+    // --- STREAMING_CHUNK:Implementing Color Resolver and State Loading Engine ---
+    /**
+     * DYNAMIC COLOR RESOLVER:
+     * Guarantees that any duty text is automatically matched to its vibrant, distinct color
+     * even if saved localStorage data previously stripped the CSS class or set it to plain.
+     */
+    function getDutyColorClass(dutyText, defaultType = 'duty-plain') {
+      if (!dutyText) return defaultType;
+      const t = dutyText.toLowerCase().trim();
+
+      if (t === 'lunch' || t.includes('lunch') || t.includes('duty free')) return 'duty-lunch';
+      if (t.includes('boys bath') || t.includes('boys bathroom') || t.includes('boy bathroom')) return 'duty-boys-bath';
+      if (t.includes('girls bath') || t.includes('girls bathroom') || t.includes('girl bathroom')) return 'duty-girls-bath';
+      if (t.includes('cafeteria') || t.includes('cafe')) return 'duty-cafe';
+      
+      if (t.includes('2nd floor ms') || t.includes('2nd ms')) return 'duty-floor-2ms';
+      if (t.includes('2nd floor hs') || t.includes('2nd hs')) return 'duty-floor-2hs';
+      if (t.includes('3rd floor ms') || t.includes('3rd ms')) return 'duty-floor-3ms';
+      if (t.includes('3rd floor hs') || t.includes('3rd hs')) return 'duty-floor-3hs';
+      
+      if (t.includes('admin') || t.includes('tobin') || t.includes('mckenzie') || t.includes('gooden') || t.includes('rosa') || t.includes('portocarrero')) return 'duty-admin';
+      if (t.includes('tech') || t.includes('ramirez')) return 'duty-tech';
+      if (t.includes('attendance') || t.includes('flack') || t.includes('office')) return 'duty-attendance';
+      if (t.includes('auditorium')) return 'duty-auditorium';
+      if (t.includes('bus')) return 'duty-bus';
+      if (t.includes('case') || t.includes('yondr') || t.includes('cellphone') || t.includes('magnet')) return 'duty-cases';
+      if (t.includes('walk')) return 'duty-walk';
+      if (t.includes('exit') || t.includes('clear')) return 'duty-clear';
+      if (t.includes('security')) return 'duty-security';
+      if (t.includes('off duty')) return 'duty-off';
+
+      return (defaultType && defaultType !== 'duty-plain') ? defaultType : 'duty-plain';
+    }
+
     let staffList = JSON.parse(JSON.stringify(INITIAL_STAFF));
     let scheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
-    let dailyAdjustments = {}; // { aideId: { type: 'late'|'early'|'both', arrivePeriod: 'p2', departPeriod: 'p6' } }
+    let dailyAdjustments = {};
     let supervisorPin = '1234';
-    let currentAppMode = 'admin'; // 'admin' or 'staff'
+    let currentAppMode = 'admin';
     let currentMainTab = 'master';
-    let activeEditingCell = null; // { aideId, periodId }
+    let activeEditingCell = null;
     let selectedStaffCardId = null;
 
     const TODAY_KEY = new Date().toISOString().split('T')[0];
 
-    // Read stored data on startup
+    // Read stored data on startup and auto-repair colors
     try {
       const savedPin = localStorage.getItem('school_aide_pin');
       if (savedPin) supervisorPin = savedPin;
@@ -774,6 +798,11 @@
         const parsedMaster = JSON.parse(savedPermanentMaster);
         Object.keys(parsedMaster).forEach(aideId => {
           DEFAULT_SCHEDULE[aideId] = parsedMaster[aideId];
+          // Ensure colors are properly resolved
+          Object.keys(DEFAULT_SCHEDULE[aideId]).forEach(pId => {
+            const slot = DEFAULT_SCHEDULE[aideId][pId];
+            slot.type = getDutyColorClass(slot.text, slot.type);
+          });
         });
       }
 
@@ -795,15 +824,23 @@
         });
       }
 
-      // 3. Check date: on a new day, keep the permanent master schedule, but clear temporary daily call-outs
+      // 3. Date check: auto-reset temporary morning call-outs on a fresh day
       const savedDate = localStorage.getItem('school_aide_date');
       if (savedDate === TODAY_KEY) {
         const savedSched = localStorage.getItem('school_aide_live_schedule');
-        if (savedSched) scheduleData = JSON.parse(savedSched);
+        if (savedSched) {
+          scheduleData = JSON.parse(savedSched);
+          // Auto-repair all colors in scheduleData
+          Object.keys(scheduleData).forEach(aideId => {
+            Object.keys(scheduleData[aideId]).forEach(pId => {
+              const slot = scheduleData[aideId][pId];
+              slot.type = getDutyColorClass(slot.text, slot.type);
+            });
+          });
+        }
         const savedAdj = localStorage.getItem('school_aide_daily_adjustments');
         if (savedAdj) dailyAdjustments = JSON.parse(savedAdj);
       } else {
-        // New day! Load clean permanent master, unmark absences, and clear daily temporary adjustments
         staffList.forEach(a => { a.absent = false; });
         dailyAdjustments = {};
         scheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
@@ -823,155 +860,7 @@
       } catch (e) {}
     }
 
-    /* Save the current schedule as the PERMANENT MASTER so it remains day after day */
-    function saveAsPermanentMaster() {
-      if (currentAppMode !== 'admin') {
-        promptSupervisorUnlock();
-        return;
-      }
-
-      // Build clean master object, stripping temporary 'Covered by' and 'LATE/EARLY' tags
-      const cleanMaster = {};
-      staffList.forEach(aide => {
-        cleanMaster[aide.id] = {};
-        PERIODS.forEach(p => {
-          const currentSlot = (scheduleData[aide.id] && scheduleData[aide.id][p.id]) || { text: 'Available', type: 'duty-plain' };
-          let text = currentSlot.text || 'Available';
-          let type = currentSlot.type || 'duty-plain';
-
-          // If this slot was temporarily covering someone, or was an alert, restore base
-          if (currentSlot.originalDuty) {
-            text = currentSlot.originalDuty;
-            type = currentSlot.originalType || type;
-          } else if (text.includes('(Covering')) {
-            text = text.replace(/\s*\(Covering.*?\)/g, '').trim();
-          } else if (text.includes('⚠️ LATE ARRIVAL') || text.includes('⚠️ EARLY DEPARTURE')) {
-            text = text.replace(/⚠️\s*(LATE ARRIVAL|EARLY DEPARTURE)\s*\((.*?)\)/, '$2').trim();
-          }
-
-          cleanMaster[aide.id][p.id] = { text: text, type: type };
-        });
-      });
-
-      // Update in-memory DEFAULT_SCHEDULE and persist in localStorage
-      Object.keys(cleanMaster).forEach(k => {
-        DEFAULT_SCHEDULE[k] = cleanMaster[k];
-      });
-
-      try {
-        localStorage.setItem('school_aide_permanent_master', JSON.stringify(cleanMaster));
-        localStorage.setItem('school_aide_staff_roster', JSON.stringify(staffList));
-      } catch (e) {
-        console.error('Failed to save master:', e);
-      }
-
-      showToast('💾 Saved as Permanent Master! Future days will now use this updated schedule.', 'emerald');
-    }
-
-    function openBackupModal() {
-      if (currentAppMode !== 'admin') {
-        promptSupervisorUnlock();
-        return;
-      }
-      const modal = document.getElementById('backupRestoreModal');
-      modal.style.display = 'flex';
-      modal.classList.remove('hidden');
-    }
-
-    function downloadBackupFile() {
-      const backupData = {
-        exportDate: new Date().toISOString(),
-        staffList: staffList,
-        permanentMaster: DEFAULT_SCHEDULE,
-        currentSchedule: scheduleData
-      };
-
-      const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(backupData, null, 2));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute('href', dataStr);
-      downloadAnchor.setAttribute('download', `school_aide_schedule_backup_${TODAY_KEY}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-      showToast('Backup file downloaded successfully!', 'emerald');
-    }
-
-    function importBackupFile() {
-      const fileInput = document.getElementById('backupFileInput');
-      if (!fileInput.files || fileInput.files.length === 0) {
-        showToast('Please select a .json backup file first.', 'rose');
-        return;
-      }
-
-      const file = fileInput.files[0];
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const parsed = JSON.parse(e.target.result);
-          if (!parsed.staffList || !parsed.permanentMaster) {
-            showToast('Invalid backup file structure.', 'rose');
-            return;
-          }
-
-          staffList = parsed.staffList;
-          Object.keys(parsed.permanentMaster).forEach(k => {
-            DEFAULT_SCHEDULE[k] = parsed.permanentMaster[k];
-          });
-          scheduleData = parsed.currentSchedule || JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
-          dailyAdjustments = {};
-
-          localStorage.setItem('school_aide_staff_roster', JSON.stringify(staffList));
-          localStorage.setItem('school_aide_permanent_master', JSON.stringify(DEFAULT_SCHEDULE));
-          localStorage.setItem('school_aide_live_schedule', JSON.stringify(scheduleData));
-          localStorage.removeItem('school_aide_daily_adjustments');
-
-          closeModal('backupRestoreModal');
-          updateAllDisplays();
-          showToast('Schedule restored from backup successfully!', 'emerald');
-        } catch (err) {
-          showToast('Error reading backup file.', 'rose');
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    function restoreFactoryDefaults() {
-      const modal = document.createElement('div');
-      modal.className = 'fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4';
-      modal.innerHTML = `
-        <div class="bg-white max-w-sm w-full p-5 rounded-2xl shadow-xl text-center space-y-4">
-          <h4 class="font-extrabold text-slate-900">Reset Factory Defaults?</h4>
-          <p class="text-xs text-slate-600">All custom permanent schedules and added staff will be cleared.</p>
-          <div class="flex gap-2 justify-center">
-            <button id="cancelResetBtn" class="px-4 py-1.5 bg-slate-100 font-bold text-xs rounded-xl text-slate-700">Cancel</button>
-            <button id="confirmResetBtn" class="px-4 py-1.5 bg-rose-600 font-bold text-xs rounded-xl text-white">Reset Everything</button>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(modal);
-
-      modal.querySelector('#cancelResetBtn').onclick = () => modal.remove();
-      modal.querySelector('#confirmResetBtn').onclick = () => {
-        try {
-          localStorage.removeItem('school_aide_permanent_master');
-          localStorage.removeItem('school_aide_staff_roster');
-          localStorage.removeItem('school_aide_live_schedule');
-          localStorage.removeItem('school_aide_daily_adjustments');
-        } catch (e) {}
-        location.reload();
-      };
-    }
-
-    function timeToMinutes(tStr) {
-      if (!tStr) return 0;
-      const parts = tStr.trim().split(':');
-      let h = parseInt(parts[0], 10);
-      let m = parseInt(parts[1], 10) || 0;
-      if (h < 7) h += 12; // PM hours
-      return h * 60 + m;
-    }
-
-    // --- STREAMING_CHUNK:Rendering Master Grid, Call-out Pills, and Floor Radar ---
+    // --- STREAMING_CHUNK:Rendering Master Schedule Table, Calls-Out, and Floor Monitor ---
     function updateAllDisplays() {
       renderAbsencePills();
       renderMasterGrid();
@@ -1035,16 +924,17 @@
           </td>
         `;
 
-        // Periods Columns
+        // Period Duty Cells
         let periodsHtml = '';
         PERIODS.forEach(period => {
           const slot = (scheduleData[aide.id] && scheduleData[aide.id][period.id]) || { text: 'Available', type: 'duty-plain' };
+          const resolvedColor = getDutyColorClass(slot.text, slot.type);
           const isSlotOpen = slot.text && (slot.text.includes('🚨 OPEN') || slot.text.includes('⚠️ LATE') || slot.text.includes('⚠️ EARLY'));
           const isCovering = slot.text && slot.text.includes('(Covering');
 
           periodsHtml += `
             <td onclick="handleCellClick('${aide.id}', '${period.id}')" class="p-1.5 border-r border-slate-100 text-center cursor-pointer transition select-none">
-              <div class="min-h-[42px] px-2 py-1 rounded-lg flex flex-col justify-center items-center text-[11px] leading-tight ${slot.type} ${
+              <div class="min-h-[42px] px-2 py-1 rounded-lg flex flex-col justify-center items-center text-[11px] leading-tight ${resolvedColor} ${
                 isSlotOpen ? 'ring-2 ring-rose-500 animate-pulse font-extrabold' : ''
               } ${isCovering ? 'border-2 border-indigo-500 font-bold' : ''}">
                 <span class="truncate max-w-[130px]">${slot.text || '-'}</span>
@@ -1075,7 +965,6 @@
 
         let periodsListHtml = '';
         PERIODS.filter(p => p.isCore).forEach(p => {
-          // Find who is assigned to this floor zone
           const assignedStaff = [];
           staffList.forEach(aide => {
             if (aide.absent) return;
@@ -1126,7 +1015,6 @@
         });
       });
 
-      // Count open duty flags
       staffList.forEach(aide => {
         PERIODS.forEach(p => {
           const slot = scheduleData[aide.id] && scheduleData[aide.id][p.id];
@@ -1169,7 +1057,6 @@
         };
         badgesContainer.appendChild(badgeBtn);
 
-        // Individual Card
         if (selectedStaffCardId && selectedStaffCardId !== aide.id) return;
 
         const card = document.createElement('div');
@@ -1178,10 +1065,10 @@
         let slotsHtml = '';
         PERIODS.forEach(p => {
           const slot = (scheduleData[aide.id] && scheduleData[aide.id][p.id]) || { text: 'Available', type: 'duty-plain' };
-          const isLunch = slot.type === 'duty-lunch';
+          const resolvedColor = getDutyColorClass(slot.text, slot.type);
 
           slotsHtml += `
-            <div class="flex items-center justify-between p-2 rounded-xl border border-slate-100 ${slot.type} text-xs">
+            <div class="flex items-center justify-between p-2 rounded-xl border border-slate-100 ${resolvedColor} text-xs">
               <div>
                 <span class="font-extrabold text-slate-700">${p.label}:</span>
                 <span class="text-[10px] text-slate-500 ml-1">(${p.time})</span>
@@ -1214,7 +1101,7 @@
       renderStaffView();
     }
 
-    // --- STREAMING_CHUNK:Implementing Morning Call-Out, Swap & Rebalance Engines ---
+    // --- STREAMING_CHUNK:Implementing Morning Call-Out, Swap & Auto-Fill Operations ---
     function toggleStaffAbsence(aideId) {
       if (currentAppMode !== 'admin') {
         promptSupervisorUnlock();
@@ -1227,7 +1114,6 @@
       aide.absent = !aide.absent;
 
       if (aide.absent) {
-        // Mark all their duties as OPEN
         PERIODS.forEach(p => {
           const current = (scheduleData[aide.id] && scheduleData[aide.id][p.id]) || DEFAULT_SCHEDULE[aide.id][p.id];
           if (current.type !== 'duty-off' && current.type !== 'duty-lunch') {
@@ -1241,12 +1127,10 @@
         });
         showToast(`${aide.name} marked absent. Tap 'Auto-Fill Open Posts' to cover.`, 'rose');
       } else {
-        // Revert their duties from default permanent schedule
         PERIODS.forEach(p => {
           scheduleData[aide.id][p.id] = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE[aide.id][p.id]));
         });
 
-        // Revert colleagues who were covering for them
         staffList.forEach(otherAide => {
           if (otherAide.id === aide.id) return;
           PERIODS.forEach(p => {
@@ -1274,18 +1158,15 @@
       let fillsCount = 0;
 
       PERIODS.forEach(period => {
-        // Find who is open in this period
         staffList.forEach(absentAide => {
           const slot = scheduleData[absentAide.id] && scheduleData[absentAide.id][period.id];
           if (!slot || !slot.text || !slot.text.includes('🚨 OPEN')) return;
 
           const dutyToCover = slot.originalDuty || slot.text.replace('🚨 OPEN', '').replace(/[()]/g, '').trim();
-          const dutyType = slot.originalType || 'duty-plain';
+          const dutyType = slot.originalType || getDutyColorClass(dutyToCover);
 
-          // Candidate Search
           const candidate = findBestCandidateToCover(period, dutyToCover, dutyType, absentAide.id);
           if (candidate) {
-            // Assign coverage
             const originalCandidateSlot = JSON.parse(JSON.stringify(scheduleData[candidate.id][period.id]));
             scheduleData[candidate.id][period.id] = {
               text: `${dutyToCover} (Covering ${absentAide.name})`,
@@ -1305,7 +1186,6 @@
         });
       });
 
-      // After filling emergency open posts, re-balance floor zones
       rebalanceBuildingCoverage(false);
       updateAllDisplays();
 
@@ -1319,29 +1199,20 @@
     function findBestCandidateToCover(period, dutyText, dutyType, absentAideId) {
       const isMaleRestroom = dutyText.toLowerCase().includes('boys bathroom');
 
-      // Rank available staff
       const candidates = staffList.filter(aide => {
         if (aide.absent || aide.id === absentAideId) return false;
-
-        // Must be in building during period
         if (aide.startMin > period.startMin || aide.endMin < period.endMin) return false;
 
         const currentSlot = scheduleData[aide.id] && scheduleData[aide.id][period.id];
         if (!currentSlot) return false;
 
-        // Cannot interrupt duty-free lunch
-        if (currentSlot.type === 'duty-lunch') return false;
-
-        // Gender preference for bathroom
+        if (currentSlot.type === 'duty-lunch' || currentSlot.text.toLowerCase().includes('lunch')) return false;
         if (isMaleRestroom && aide.gender !== 'male') return false;
-
-        // Protect specific locked pairings unless no other choice
         if (currentSlot.type === 'duty-bus' || currentSlot.type === 'duty-tech') return false;
 
         return true;
       });
 
-      // Priority: 1) Floaters (Mr. Diaz) 2) General floor aides 3) Admin pairings
       candidates.sort((a, b) => {
         if (a.isFloater && !b.isFloater) return -1;
         if (!a.isFloater && b.isFloater) return 1;
@@ -1387,7 +1258,6 @@
           });
 
           if (!isCovered) {
-            // Find an aide with a general/floating post to fill this zone
             const candidate = staffList.find(aide => {
               if (aide.absent) return false;
               if (aide.startMin > p.startMin || aide.endMin < p.endMin) return false;
@@ -1417,7 +1287,7 @@
       modal.innerHTML = `
         <div class="bg-white max-w-sm w-full p-5 rounded-2xl shadow-xl text-center space-y-4">
           <h4 class="font-extrabold text-slate-900">Reset to Fresh Day?</h4>
-          <p class="text-xs text-slate-600">This will clear today's call-outs and restore the baseline permanent master schedule.</p>
+          <p class="text-xs text-slate-600">This will clear today's call-outs and restore your permanent baseline schedule.</p>
           <div class="flex gap-2 justify-center">
             <button id="cancelResetDayBtn" class="px-4 py-1.5 bg-slate-100 font-bold text-xs rounded-xl text-slate-700">Cancel</button>
             <button id="confirmResetDayBtn" class="px-4 py-1.5 bg-rose-600 font-bold text-xs rounded-xl text-white">Reset Day</button>
@@ -1453,7 +1323,7 @@
       document.getElementById('modalCellTitle').textContent = `Edit Duty: ${aide.name}`;
       document.getElementById('modalCellSubtitle').textContent = `${period.label} (${period.time})`;
       document.getElementById('modalDutyInput').value = slot.text || '';
-      document.getElementById('modalColorSelect').value = slot.type || 'duty-plain';
+      document.getElementById('modalColorSelect').value = getDutyColorClass(slot.text, slot.type);
 
       const modal = document.getElementById('editCellModal');
       modal.style.display = 'flex';
@@ -1472,7 +1342,7 @@
       const type = document.getElementById('modalColorSelect').value;
 
       if (!scheduleData[aideId]) scheduleData[aideId] = {};
-      scheduleData[aideId][periodId] = { text, type };
+      scheduleData[aideId][periodId] = { text, type: getDutyColorClass(text, type) };
 
       closeModal('editCellModal');
       updateAllDisplays();
@@ -1488,7 +1358,7 @@
       showToast('Duty slot cleared.', 'slate');
     }
 
-    // --- STREAMING_CHUNK:Adding Staff and Adjusting Hours Handlers ---
+    // --- STREAMING_CHUNK:Staff Addition and Schedule Adjustment Logic ---
     function openAddStaffModal() {
       if (currentAppMode !== 'admin') {
         promptSupervisorUnlock();
@@ -1498,6 +1368,15 @@
       const modal = document.getElementById('addStaffModal');
       modal.style.display = 'flex';
       modal.classList.remove('hidden');
+    }
+
+    function timeToMinutes(tStr) {
+      if (!tStr) return 0;
+      const parts = tStr.trim().split(':');
+      let h = parseInt(parts[0], 10);
+      let m = parseInt(parts[1], 10) || 0;
+      if (h < 7) h += 12;
+      return h * 60 + m;
     }
 
     function saveNewStaffMember() {
@@ -1529,7 +1408,6 @@
 
       staffList.push(newStaff);
 
-      // Create their schedule template
       DEFAULT_SCHEDULE[id] = {};
       scheduleData[id] = {};
       PERIODS.forEach(p => {
@@ -1659,7 +1537,148 @@
       showToast('Hours reset to normal baseline.', 'emerald');
     }
 
-    // --- STREAMING_CHUNK:Supervisor Security, Mode Switching, and Export CSV ---
+    // --- STREAMING_CHUNK:Implementing Permanent Master Save and Backup Routines ---
+    function saveAsPermanentMaster() {
+      if (currentAppMode !== 'admin') {
+        promptSupervisorUnlock();
+        return;
+      }
+
+      const cleanMaster = {};
+      staffList.forEach(aide => {
+        cleanMaster[aide.id] = {};
+        PERIODS.forEach(p => {
+          const currentSlot = (scheduleData[aide.id] && scheduleData[aide.id][p.id]) || { text: 'Available', type: 'duty-plain' };
+          let text = currentSlot.text || 'Available';
+          let type = getDutyColorClass(text, currentSlot.type);
+
+          if (currentSlot.originalDuty) {
+            text = currentSlot.originalDuty;
+            type = getDutyColorClass(text, currentSlot.originalType || type);
+          } else if (text.includes('(Covering')) {
+            text = text.replace(/\s*\(Covering.*?\)/g, '').trim();
+            type = getDutyColorClass(text, type);
+          } else if (text.includes('⚠️ LATE ARRIVAL') || text.includes('⚠️ EARLY DEPARTURE')) {
+            text = text.replace(/⚠️\s*(LATE ARRIVAL|EARLY DEPARTURE)\s*\((.*?)\)/, '$2').trim();
+            type = getDutyColorClass(text, type);
+          }
+
+          cleanMaster[aide.id][p.id] = { text: text, type: type };
+        });
+      });
+
+      Object.keys(cleanMaster).forEach(k => {
+        DEFAULT_SCHEDULE[k] = cleanMaster[k];
+      });
+
+      try {
+        localStorage.setItem('school_aide_permanent_master', JSON.stringify(cleanMaster));
+        localStorage.setItem('school_aide_staff_roster', JSON.stringify(staffList));
+      } catch (e) {
+        console.error('Failed to save master:', e);
+      }
+
+      showToast('💾 Saved as Permanent Master! Baseline updated.', 'emerald');
+    }
+
+    function openBackupModal() {
+      if (currentAppMode !== 'admin') {
+        promptSupervisorUnlock();
+        return;
+      }
+      const modal = document.getElementById('backupRestoreModal');
+      modal.style.display = 'flex';
+      modal.classList.remove('hidden');
+    }
+
+    function downloadBackupFile() {
+      const backupData = {
+        exportDate: new Date().toISOString(),
+        staffList: staffList,
+        permanentMaster: DEFAULT_SCHEDULE,
+        currentSchedule: scheduleData
+      };
+
+      const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(backupData, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute('href', dataStr);
+      downloadAnchor.setAttribute('download', `school_aide_schedule_backup_${TODAY_KEY}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast('Backup file downloaded successfully!', 'emerald');
+    }
+
+    function importBackupFile() {
+      const fileInput = document.getElementById('backupFileInput');
+      if (!fileInput.files || fileInput.files.length === 0) {
+        showToast('Please select a .json backup file first.', 'rose');
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (!parsed.staffList || !parsed.permanentMaster) {
+            showToast('Invalid backup file structure.', 'rose');
+            return;
+          }
+
+          staffList = parsed.staffList;
+          Object.keys(parsed.permanentMaster).forEach(k => {
+            DEFAULT_SCHEDULE[k] = parsed.permanentMaster[k];
+            Object.keys(DEFAULT_SCHEDULE[k]).forEach(pId => {
+              DEFAULT_SCHEDULE[k][pId].type = getDutyColorClass(DEFAULT_SCHEDULE[k][pId].text, DEFAULT_SCHEDULE[k][pId].type);
+            });
+          });
+          scheduleData = parsed.currentSchedule || JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
+          dailyAdjustments = {};
+
+          localStorage.setItem('school_aide_staff_roster', JSON.stringify(staffList));
+          localStorage.setItem('school_aide_permanent_master', JSON.stringify(DEFAULT_SCHEDULE));
+          localStorage.setItem('school_aide_live_schedule', JSON.stringify(scheduleData));
+          localStorage.removeItem('school_aide_daily_adjustments');
+
+          closeModal('backupRestoreModal');
+          updateAllDisplays();
+          showToast('Schedule restored from backup successfully!', 'emerald');
+        } catch (err) {
+          showToast('Error reading backup file.', 'rose');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function restoreFactoryDefaults() {
+      const modal = document.createElement('div');
+      modal.className = 'fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4';
+      modal.innerHTML = `
+        <div class="bg-white max-w-sm w-full p-5 rounded-2xl shadow-xl text-center space-y-4">
+          <h4 class="font-extrabold text-slate-900">Reset Factory Defaults?</h4>
+          <p class="text-xs text-slate-600">All custom permanent schedules and added staff will be cleared.</p>
+          <div class="flex gap-2 justify-center">
+            <button id="cancelResetBtn" class="px-4 py-1.5 bg-slate-100 font-bold text-xs rounded-xl text-slate-700">Cancel</button>
+            <button id="confirmResetBtn" class="px-4 py-1.5 bg-rose-600 font-bold text-xs rounded-xl text-white">Reset Everything</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+
+      modal.querySelector('#cancelResetBtn').onclick = () => modal.remove();
+      modal.querySelector('#confirmResetBtn').onclick = () => {
+        try {
+          localStorage.removeItem('school_aide_permanent_master');
+          localStorage.removeItem('school_aide_staff_roster');
+          localStorage.removeItem('school_aide_live_schedule');
+          localStorage.removeItem('school_aide_daily_adjustments');
+        } catch (e) {}
+        location.reload();
+      };
+    }
+
+    // --- STREAMING_CHUNK:Supervisor PIN Authentication and App Mode Handling ---
     function toggleSupervisorMode() {
       if (currentAppMode === 'admin') {
         currentAppMode = 'staff';
@@ -1771,7 +1790,6 @@
       const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
       document.getElementById('todayDateLabel').textContent = new Date().toLocaleDateString(undefined, options);
 
-      // Check if URL specifies #staff
       if (window.location.hash === '#staff') {
         currentAppMode = 'staff';
         document.getElementById('roleBadge').textContent = 'Staff View';
