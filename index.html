@@ -1,151 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>School Aide Daily Coverage Hub & Floor Manager</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace']
-          },
-          colors: {
-            brand: {
-              50: '#eef2ff',
-              100: '#e0e7ff',
-              500: '#6366f1',
-              600: '#4f46e5',
-              700: '#4338ca'
-            }
-          }
-        }
-      }
-    }
-  </script>
-  <style>
-    @media print {
-      .no-print { display: none !important; }
-      body { background: white !important; font-size: 8.5pt; color: black !important; }
-      table { page-break-inside: auto; width: 100% !important; }
-      tr { page-break-inside: avoid; page-break-after: auto; }
-      .table-sticky-col { position: static !important; }
-      .shadow-sm, .shadow-md, .shadow-lg { box-shadow: none !important; }
-    }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #f1f5f9; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
-    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-    .table-sticky-col { position: sticky; left: 0; z-index: 10; }
-  </style>
-</head>
-<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col font-sans">
-
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs no-print">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex flex-wrap items-center justify-between gap-3">
-      <!-- Title & Live Status -->
-      <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-black text-xl shadow-md shadow-indigo-100 flex-shrink-0">
-          🏫
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <h1 id="appHeaderTitle" class="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-tight">School Aide Coverage Hub</h1>
-            <span id="appHeaderBadge" class="bg-indigo-100 text-indigo-800 text-[10px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider">Supervisor Admin</span>
-          </div>
-          <p class="text-xs text-slate-500 font-medium flex items-center gap-2 mt-0.5">
-            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span id="headerTodayDate">Loading...</span>
-            <span class="text-slate-300">|</span>
-            <span id="calloutSummaryBadge" class="text-emerald-700 font-bold">All 10 Staff Present</span>
-          </p>
-        </div>
-      </div>
-
-      <!-- Navigation for Supervisor Mode -->
-      <div id="adminNavControls" class="flex items-center flex-wrap gap-2">
-        <div class="bg-slate-100 p-1 rounded-xl flex items-center text-xs font-semibold text-slate-600 border border-slate-200 shadow-inner">
-          <button id="navBtnMaster" onclick="switchView('master')" class="px-3 py-1.5 rounded-lg bg-white text-indigo-700 shadow-xs font-bold transition">
-            Master Grid
-          </button>
-          <button id="navBtnFloors" onclick="switchView('floors')" class="px-3 py-1.5 rounded-lg hover:text-slate-900 transition flex items-center gap-1.5">
-            <span>4-Floor Radar</span>
-            <span id="floorBadgeStatus" class="bg-emerald-100 text-emerald-800 text-[9px] font-black px-1.5 py-0.5 rounded">100%</span>
-          </button>
-          <button id="navBtnPeriods" onclick="switchView('periods')" class="px-3 py-1.5 rounded-lg hover:text-slate-900 transition">
-            Period by Period
-          </button>
-          <button id="navBtnStaffSite" onclick="setAppMode('staff')" class="px-3 py-1.5 rounded-lg hover:text-slate-900 transition flex items-center gap-1">
-            <span>Staff Portal View</span>
-            <span class="bg-indigo-100 text-indigo-700 text-[9px] font-bold px-1 py-0.2 rounded">Staff</span>
-          </button>
-        </div>
-
-        <button onclick="copyShareableUrl()" title="Copy live link to clipboard" class="px-2.5 py-1.5 text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 rounded-lg border border-slate-200 shadow-xs flex items-center gap-1.5 transition">
-          <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-          Share
-        </button>
-        <button onclick="exportToCSV()" class="px-2.5 py-1.5 text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 rounded-lg border border-slate-200 shadow-xs flex items-center gap-1.5 transition">
-          <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-          CSV
-        </button>
-        <button onclick="window.print()" class="px-3 py-1.5 text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white rounded-lg shadow-xs flex items-center gap-1.5 transition">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-          Print
-        </button>
-        <button onclick="openChangePinModal()" title="Change supervisor PIN code" class="px-2.5 py-1.5 text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg border border-slate-300 transition flex items-center gap-1">
-          <span>⚙️ PIN</span>
-        </button>
-        <button onclick="lockToStaffMode()" title="Lock schedule to Staff View" class="px-2.5 py-1.5 text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg transition flex items-center gap-1">
-          <span>🔒 Lock</span>
-        </button>
-      </div>
-
-      <!-- Navigation for Staff Portal Mode -->
-      <div id="staffNavControls" class="hidden flex items-center gap-2">
-        <button onclick="window.print()" class="px-3 py-1.5 text-xs font-bold bg-white hover:bg-slate-50 text-slate-700 rounded-lg border border-slate-200 shadow-xs flex items-center gap-1.5 transition">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-          Print
-        </button>
-        <button onclick="promptSupervisorUnlock()" class="px-3 py-1.5 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-xs flex items-center gap-1.5 transition">
-          <span>🔒 Supervisor Access</span>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <!-- Notification Toast Container -->
-  <div id="toastBox" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
-    <div id="toastContent" class="bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-xs font-semibold border border-slate-700">
-      <span id="toastIcon">✨</span>
-      <span id="toastMessage">Updated successfully</span>
-    </div>
-  </div>
-
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 w-full flex-grow flex flex-col gap-4">
-
-    <div id="adminDashboardWidgets" class="space-y-4">
-      <!-- Callout Quick Solver -->
-      <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs no-print">
-        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 pb-3 border-b border-slate-100">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="text-base">⚡</span>
-              <h2 class="text-sm font-black text-slate-900 tracking-tight uppercase">Morning Call-Out Quick Solver</h2>
-              <span id="uncoveredCounter" class="bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2 py-0.5 rounded-full">0 Open Posts</span>
-            </div>
-            <p class="text-xs text-slate-500 mt-0.5">
-              Tap anyone who called out. Posts needing coverage highlight immediately; click "Auto-Fill" or click any cell in the grid to manually swap.
-            </p>
-          </div>
-
+<!-- ... existing code ... -->
           <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="openAddStaffModal()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5 active:scale-95">
+              <span>➕ Add New Staff</span>
+            </button>
+            <button onclick="openAdjustHoursModal()" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5 active:scale-95">
+              <span>⏱️ Late / Early Today</span>
+            </button>
             <button onclick="autoFillAllOpenPosts()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5 active:scale-95">
               ⚡ Auto-Fill Open Posts
             </button>
@@ -156,573 +16,183 @@
         </div>
 
         <div class="mt-3 flex items-center flex-wrap gap-2" id="quickAbsencePills">
-          <!-- Dynamically rendered via JS -->
-        </div>
-      </div>
+<!-- ... existing code ... -->
+```
 
-      <!-- 4-Zone Floor Coverage Live Inspector -->
-      <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-xs no-print">
-        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
-          <div class="flex items-center gap-2">
-            <span class="text-sm">🏢</span>
-            <h3 class="text-xs font-black uppercase tracking-wider text-slate-800">4-Zone Floor Coverage Live Inspector</h3>
-            <span class="text-[10px] text-slate-500 font-medium">(2nd Fl MS • 2nd Fl HS • 3rd Fl MS • 3rd Fl HS)</span>
-          </div>
-          <div class="flex items-center gap-2 text-[11px]">
-            <span class="text-slate-500 font-medium">Coverage Status:</span>
-            <span id="floorSummaryPill" class="font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">Checking...</span>
-          </div>
-        </div>
-        <div id="floorMiniMatrix" class="grid grid-cols-4 sm:grid-cols-8 gap-2 text-center text-[10px]">
-          <!-- Dynamically rendered via JS -->
-        </div>
+```html:School Aide Daily Coverage & Swap Manager:index.html
+<!-- ... existing code ... -->
       </div>
     </div>
+  </div>
 
-    <!-- View 1: Master Schedule Grid -->
-    <div id="viewMasterContainer" class="space-y-4">
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-        <div class="p-3.5 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h3 class="font-black text-slate-900 text-sm tracking-tight flex items-center gap-2">
-              <span>📋 Master Schedule Grid</span>
-              <span class="text-[10px] bg-slate-200 text-slate-700 font-bold px-2 py-0.5 rounded">Click any cell to Edit or Swap</span>
-            </h3>
-            <p class="text-xs text-slate-500">Every category and sub-role is coded with its own distinct color and left-border tag.</p>
-          </div>
-
-          <!-- Color Legend -->
-          <div class="flex items-center flex-wrap gap-1.5 text-[10px] font-bold text-slate-800 max-w-3xl">
-            <span class="px-2 py-0.5 rounded bg-amber-200 border-l-4 border-amber-600 text-amber-950">🥪 Lunch</span>
-            <span class="px-2 py-0.5 rounded bg-orange-200 border-l-4 border-orange-500 text-orange-950">🍽️ Cafeteria</span>
-            <span class="px-2 py-0.5 rounded bg-blue-200 border-l-4 border-blue-600 text-blue-950">🚻 Boys Bath (M)</span>
-            <span class="px-2 py-0.5 rounded bg-rose-200 border-l-4 border-rose-500 text-rose-950">🚻 Girls Bath</span>
-            <span class="px-2 py-0.5 rounded bg-emerald-200 border-l-4 border-emerald-600 text-emerald-950">🏢 2nd Fl MS</span>
-            <span class="px-2 py-0.5 rounded bg-teal-200 border-l-4 border-teal-600 text-teal-950">🏢 2nd Fl HS</span>
-            <span class="px-2 py-0.5 rounded bg-sky-200 border-l-4 border-sky-600 text-sky-950">🏢 3rd Fl MS</span>
-            <span class="px-2 py-0.5 rounded bg-indigo-200 border-l-4 border-indigo-600 text-indigo-950">🏢 3rd Fl HS</span>
-            <span class="px-2 py-0.5 rounded bg-purple-200 border-l-4 border-purple-600 text-purple-950">🤝 Admin Support</span>
-            <span class="px-2 py-0.5 rounded bg-cyan-200 border-l-4 border-cyan-600 text-cyan-950">💻 Tech Support</span>
-            <span class="px-2 py-0.5 rounded bg-red-200 border-l-4 border-red-500 text-red-950">📝 Attendance</span>
-            <span class="px-2 py-0.5 rounded bg-fuchsia-200 border-l-4 border-fuchsia-600 text-fuchsia-950">🎭 Auditorium</span>
-            <span class="px-2 py-0.5 rounded bg-yellow-300 border-l-4 border-yellow-600 text-yellow-950">🚌 Bus Duty</span>
-            <span class="px-2 py-0.5 rounded bg-lime-200 border-l-4 border-lime-600 text-lime-950">📱 Cell Cases/Yondr</span>
-            <span class="px-2 py-0.5 rounded bg-pink-300 border-l-4 border-pink-600 text-pink-950">🚶 Walk Building</span>
-            <span class="px-2 py-0.5 rounded bg-slate-200 border-l-4 border-slate-500 text-slate-900">🚪 Exits / Clear</span>
-            <span class="px-2 py-0.5 rounded bg-violet-200 border-l-4 border-violet-600 text-violet-950">👮 Security Desk</span>
-            <span class="px-2 py-0.5 rounded bg-amber-300 border-l-4 border-amber-700 text-stone-950">📦 Packages/Supply</span>
-            <span class="px-2 py-0.5 rounded bg-rose-300 border-l-4 border-rose-700 text-rose-950">⚖️ Detention</span>
-          </div>
-        </div>
-
-        <!-- Master Scrollable Table -->
-        <div class="overflow-x-auto">
-          <table id="masterScheduleTable" class="w-full text-left text-xs border-collapse">
-            <thead class="bg-slate-900 text-white uppercase text-[10px] tracking-wider font-extrabold sticky top-0 z-20">
-              <tr id="masterTheadRow">
-                <!-- Injected via JavaScript -->
-              </tr>
-            </thead>
-            <tbody id="masterTbody" class="divide-y divide-slate-200">
-              <!-- Injected via JavaScript -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- View 2: Floor Radar -->
-    <div id="viewFloorsContainer" class="hidden space-y-4">
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h3 class="font-black text-slate-900 text-base flex items-center gap-2">
-            <span>🏢 Building Hallway & Floor Coverage Radar</span>
-          </h3>
-          <p class="text-xs text-slate-500">
-            Ensures continuous supervision for all 4 zones: <strong>2nd Floor MS</strong>, <strong>2nd Floor HS</strong>, <strong>3rd Floor MS</strong>, and <strong>3rd Floor HS</strong>.
-          </p>
-        </div>
-        <div class="flex items-center gap-2 text-xs">
-          <span class="inline-flex items-center gap-1 font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg">
-            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Zone Covered
-          </span>
-          <span class="inline-flex items-center gap-1 font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-lg">
-            <span class="w-2 h-2 rounded-full bg-rose-500"></span> Gap / Needs Aide
-          </span>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs border-collapse">
-            <thead class="bg-slate-900 text-white uppercase text-[10px] tracking-wider font-extrabold">
-              <tr>
-                <th class="py-3 px-3.5 w-44">Period & Time</th>
-                <th class="py-3 px-3 bg-emerald-950 text-emerald-300 border-l border-slate-800">2nd Floor MS</th>
-                <th class="py-3 px-3 bg-teal-950 text-teal-300 border-l border-slate-800">2nd Floor HS</th>
-                <th class="py-3 px-3 bg-sky-950 text-sky-300 border-l border-slate-800">3rd Floor MS</th>
-                <th class="py-3 px-3 bg-indigo-950 text-indigo-300 border-l border-slate-800">3rd Floor HS</th>
-                <th class="py-3 px-3 bg-slate-800 text-center w-32">Status</th>
-              </tr>
-            </thead>
-            <tbody id="floorRadarTableBody" class="divide-y divide-slate-200">
-              <!-- Injected via JavaScript -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- View 3: Period by Period -->
-    <div id="viewPeriodsContainer" class="hidden space-y-4">
-      <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs no-print">
+  <!-- Add New Staff Member Modal -->
+  <div id="addStaffModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-xs z-50 hidden items-center justify-center p-4" style="display: none;">
+    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <span class="text-xs font-bold uppercase text-slate-500">Jump to Period:</span>
-          <select id="periodFilterSelect" onchange="renderPeriodBreakdown()" class="text-xs font-bold bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-indigo-500 outline-none">
-            <option value="ALL">Show All Periods</option>
-            <!-- Injected via JS -->
+          <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-base">➕</div>
+          <div>
+            <h3 class="font-extrabold text-slate-900 text-sm">Add New Team Member</h3>
+            <p class="text-[11px] text-slate-500">Adds an aide to today's schedule and the permanent active roster.</p>
+          </div>
+        </div>
+        <button onclick="closeModal('addStaffModal')" class="w-7 h-7 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-600 font-bold text-xs transition">✕</button>
+      </div>
+
+      <div class="p-5 space-y-3.5 text-xs overflow-y-auto">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Full Name & Title <span class="text-rose-500">*</span></label>
+          <input type="text" id="newStaffNameInput" placeholder="e.g. Ms. Higgins or Mr. Martinez" class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none text-xs font-semibold">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Gender (for Restroom coverage):</label>
+            <select id="newStaffGenderInput" class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
+              <option value="F">Female (👩)</option>
+              <option value="M">Male (👨 - Boys Bath eligible)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Duty-Free Lunch Period:</label>
+            <select id="newStaffLunchPeriodInput" class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
+              <option value="p4">Period 4 (10:42 - 11:26)</option>
+              <option value="p5" selected>Period 5 (11:29 - 12:13)</option>
+              <option value="p6">Period 6 (12:16 - 1:00)</option>
+              <option value="p7">Period 7 (1:03 - 1:47)</option>
+              <option value="p8">Period 8 (Post-Cafe Lunch)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Scheduled Time In:</label>
+            <input type="time" id="newStaffTimeInInput" value="07:30" class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Scheduled Time Out:</label>
+            <input type="time" id="newStaffTimeOutInput" value="15:00" class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none">
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 pt-1">
+          <input type="checkbox" id="newStaffFloaterInput" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
+          <label for="newStaffFloaterInput" class="font-bold text-slate-700 cursor-pointer">Designate as Building Floater (Flexible reassignment)</label>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Default In-Between Duty:</label>
+          <select id="newStaffDefaultDutyInput" class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none bg-white text-xs">
+            <option value="hall2MS">2nd Floor MS Support</option>
+            <option value="hall2HS">2nd Floor HS Support</option>
+            <option value="hall3MS">3rd Floor MS Support</option>
+            <option value="hall3HS">3rd Floor HS Support</option>
+            <option value="cafe">Cafeteria Floor Support</option>
+            <option value="plain">General Coverage / Open Post</option>
           </select>
         </div>
-        <div class="text-xs text-slate-500">
-          Supervisors can check coverage across each block of the day.
-        </div>
+
+        <p id="addStaffError" class="hidden text-rose-600 font-bold text-xs"></p>
       </div>
 
-      <div id="periodCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <!-- Injected via JavaScript -->
+      <div class="p-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+        <button type="button" onclick="closeModal('addStaffModal')" class="px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200">
+          Cancel
+        </button>
+        <button type="button" onclick="saveNewStaffMember()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-md transition">
+          Add to Schedule
+        </button>
       </div>
     </div>
+  </div>
 
-    <!-- View 4: Dedicated Staff Portal View (Read-Only) -->
-    <div id="viewStaffSiteContainer" class="hidden space-y-5">
-      <div class="bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
-        <div class="max-w-2xl relative z-10">
-          <div class="inline-flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-widest text-indigo-300 bg-indigo-800/80 px-3 py-1 rounded-full mb-3">
-            <span>🛡️ Daily Aide Coverage Board</span>
-          </div>
-          <h2 class="text-2xl sm:text-3xl font-black tracking-tight">Today's Station & Lunch Schedule</h2>
-          <p class="text-xs sm:text-sm text-indigo-200 mt-2 leading-relaxed">
-            Select your name below to view your personal period breakdown, classroom pairings, and assigned duty-free lunch period.
-          </p>
-        </div>
-
-        <!-- Quick Select Staff Chips -->
-        <div class="mt-6">
-          <div class="text-xs font-bold uppercase text-indigo-300 mb-2">Tap Your Name:</div>
-          <div id="staffQuickPickChips" class="flex flex-wrap gap-2">
-            <!-- Chips injected via JS -->
-          </div>
-        </div>
-      </div>
-
-      <!-- Individual Focused Schedule Card (Displays when an aide is clicked) -->
-      <div id="individualStaffCard" class="hidden bg-white rounded-2xl border-2 border-indigo-500/40 p-5 shadow-lg">
-        <!-- Rendered via JS -->
-      </div>
-
-      <!-- Staff Schedule Table View -->
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-        <div class="p-4 border-b border-slate-100 flex flex-wrap justify-between items-center bg-slate-50/70 gap-2">
+  <!-- Late Arrival & Early Departure Modal -->
+  <div id="adjustHoursModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-xs z-50 hidden items-center justify-center p-4" style="display: none;">
+    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="p-4 border-b border-slate-100 bg-amber-50/70 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-base">⏱️</div>
           <div>
-            <h3 class="font-extrabold text-slate-800 text-sm">All Staff Daily Overview</h3>
-            <p class="text-xs text-slate-500">Summary of lunch windows, pairings, and primary assignments.</p>
+            <h3 class="font-extrabold text-slate-900 text-sm">Late Arrival / Early Departure</h3>
+            <p class="text-[11px] text-slate-500">Flags unattended periods as open posts while keeping the aide active for the rest of the day.</p>
           </div>
-          <button id="btnToggleStaffMasterTable" onclick="toggleStaffMasterTableView()" class="text-xs font-bold bg-white hover:bg-slate-100 text-indigo-700 px-3 py-1.5 rounded-lg border border-slate-200 shadow-2xs transition">
-            Show Full Period-by-Period Grid
-          </button>
         </div>
-
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs">
-            <thead class="bg-slate-100 text-slate-700 font-bold uppercase tracking-wider text-[10px]">
-              <tr>
-                <th class="py-3 px-4">Staff Member</th>
-                <th class="py-3 px-4">Hours</th>
-                <th class="py-3 px-4 bg-amber-50 text-amber-900">Duty-Free Lunch</th>
-                <th class="py-3 px-4">Period 2-3 Pairings</th>
-                <th class="py-3 px-4">Cafeteria / Arrival / Dismissal</th>
-                <th class="py-3 px-4">Status</th>
-              </tr>
-            </thead>
-            <tbody id="staffPortalTableBody" class="divide-y divide-slate-100 font-medium text-slate-700">
-              <!-- Rendered via JS -->
-            </tbody>
-          </table>
-        </div>
+        <button onclick="closeModal('adjustHoursModal')" class="w-7 h-7 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-600 font-bold text-xs transition">✕</button>
       </div>
 
-      <!-- Full Master Table in Read-Only Mode for Staff -->
-      <div id="staffFullMasterWrapper" class="hidden bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-        <div class="p-3.5 bg-slate-900 text-white flex items-center justify-between">
-          <h4 class="font-bold text-xs">Complete Building Schedule (Read-Only)</h4>
-          <span class="text-[10px] text-slate-400">All 8 Periods + Arrival / Dismissal</span>
+      <div class="p-5 space-y-4 text-xs overflow-y-auto">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Select Staff Member:</label>
+          <select id="adjustStaffSelect" onchange="syncAdjustModalFields()" class="w-full px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none bg-white font-bold text-xs">
+            <!-- Populated via JS -->
+          </select>
         </div>
-        <div class="overflow-x-auto" id="staffReadOnlyGridContainer">
-          <!-- Cloned table injected here -->
-        </div>
-      </div>
 
-      <!-- Google Site Instructions Box -->
-      <div class="p-4 bg-slate-100 rounded-2xl border border-slate-200 text-xs text-slate-600 flex items-start gap-3 no-print">
-        <span class="text-xl">🌐</span>
-        <div class="space-y-1.5 flex-grow">
-          <strong class="text-slate-800 text-sm">Direct Staff Link & Google Sites Embed Code:</strong>
-          <p class="text-xs">
-            To share directly with your aides so they only see the clean staff view without admin buttons, copy this URL:
-          </p>
-          <div class="flex items-center gap-2 max-w-xl">
-            <input type="text" id="directStaffLinkInput" readonly class="bg-white border border-slate-300 text-indigo-900 font-mono text-xs px-3 py-1.5 rounded-lg flex-grow shadow-2xs select-all">
-            <button onclick="copyDirectStaffLink()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg shadow-2xs">
-              Copy Link
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
+          <span class="block text-[11px] font-black uppercase tracking-wider text-slate-600">Adjustment Type for Today:</span>
+          <div class="grid grid-cols-3 gap-1.5">
+            <button type="button" id="btnTypeLate" onclick="setAdjustType('late')" class="py-2 px-2 text-center rounded-lg border font-bold text-xs bg-amber-100 text-amber-900 border-amber-400">
+              ⏰ Arriving Late
+            </button>
+            <button type="button" id="btnTypeEarly" onclick="setAdjustType('early')" class="py-2 px-2 text-center rounded-lg border font-bold text-xs bg-white text-slate-700 border-slate-200">
+              🏃 Leaving Early
+            </button>
+            <button type="button" id="btnTypeBoth" onclick="setAdjustType('both')" class="py-2 px-2 text-center rounded-lg border font-bold text-xs bg-white text-slate-700 border-slate-200">
+              ⚡ Both / Partial
             </button>
           </div>
         </div>
-      </div>
-    </div>
 
-  </main>
-
-  <!-- Edit Cell Modal -->
-  <div id="editCellModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
-    <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
-      <div class="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
-        <div>
-          <span class="text-[10px] uppercase font-bold text-indigo-600 tracking-wider">Shift Editor & Reassignment</span>
-          <h3 id="modalPeriodAideTitle" class="font-extrabold text-slate-900 text-sm">Period: Staff</h3>
-        </div>
-        <button onclick="closeModal('editCellModal')" class="w-7 h-7 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-600 font-bold text-xs transition">✕</button>
-      </div>
-
-      <div class="p-4 space-y-4 overflow-y-auto">
-        <!-- Duty Description -->
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Duty Assignment / Location:</label>
-          <input type="text" id="modalCustomDutyInput" placeholder="e.g. 2nd Floor MS Support" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none">
-        </div>
-
-        <!-- Color / Category Select -->
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Category & Visual Color:</label>
-          <select id="modalColorSelect" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
-            <option value="hall2MS">🏢 2nd Floor MS</option>
-            <option value="hall2HS">🏢 2nd Floor HS</option>
-            <option value="hall3MS">🏢 3rd Floor MS</option>
-            <option value="hall3HS">🏢 3rd Floor HS</option>
-            <option value="cafe">🍽️ Cafeteria Floor</option>
-            <option value="boysBath">🚻 Boys Bathroom (M)</option>
-            <option value="girlsBath">🚻 Girls Bathroom</option>
-            <option value="lunch">🥪 Lunch (Duty-Free)</option>
-            <option value="admin">🤝 Admin / Teacher Support</option>
-            <option value="tech">💻 Tech Support</option>
-            <option value="attend">📝 Attendance / Main Office</option>
-            <option value="auditorium">🎭 Auditorium</option>
-            <option value="bus">🚌 Bus Duty</option>
-            <option value="cases">📱 Cellphone Cases / Yondr</option>
-            <option value="walk">🚶 Walk The Building</option>
-            <option value="exit">🚪 Exit / Dismissal Supervision</option>
-            <option value="security">👮 Security Desk</option>
-            <option value="packages">📦 Package Room / Supply</option>
-            <option value="detention">⚖️ Detention / After School</option>
-            <option value="off">⚪ Off Duty / Not Scheduled</option>
-            <option value="plain">General Coverage</option>
+        <!-- Late options -->
+        <div id="lateOptionsContainer" class="space-y-1.5">
+          <label class="block font-bold text-slate-700">Arriving Today At Period:</label>
+          <select id="adjustLateArrivingPeriod" class="w-full px-3 py-2 border border-amber-300 bg-amber-50/50 rounded-xl font-bold text-xs">
+            <!-- Injected via JS -->
           </select>
+          <p class="text-[10px] text-slate-500">Periods prior to this will be marked <strong>"⚠️ LATE ARRIVAL"</strong> and flagged for auto-fill coverage.</p>
         </div>
 
-        <!-- Preset Quick Picks -->
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Quick Select Preset Duty:</label>
-          <div id="presetRoleButtons" class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 max-h-44 overflow-y-auto p-1 bg-slate-50 rounded-xl border border-slate-200">
-            <!-- Populated via JS -->
-          </div>
+        <!-- Early options -->
+        <div id="earlyOptionsContainer" class="space-y-1.5 hidden">
+          <label class="block font-bold text-slate-700">Departing Today After Period:</label>
+          <select id="adjustEarlyLeavingPeriod" class="w-full px-3 py-2 border border-amber-300 bg-amber-50/50 rounded-xl font-bold text-xs">
+            <!-- Injected via JS -->
+          </select>
+          <p class="text-[10px] text-slate-500">Periods after this will be marked <strong>"⚠️ EARLY DEPARTURE"</strong> and flagged for auto-fill coverage.</p>
+        </div>
+
+        <div id="adjustCurrentStatusBanner" class="p-2.5 rounded-xl bg-slate-100 text-slate-700 text-[11px] flex items-center justify-between">
+          <span id="adjustStatusSummary">Currently working normal scheduled shift.</span>
+          <button type="button" onclick="clearAideAdjustedHours()" id="btnClearAdjust" class="hidden text-rose-600 font-bold hover:underline">
+            Reset to Normal Hours
+          </button>
         </div>
       </div>
 
-      <div class="p-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-2">
-        <button onclick="setSlotToVacant()" class="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition">
-          Clear / Unassigned
+      <div class="p-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+        <button type="button" onclick="closeModal('adjustHoursModal')" class="px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200">
+          Cancel
         </button>
-        <div class="flex items-center gap-2">
-          <button onclick="closeModal('editCellModal')" class="px-3 py-2 bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-xl border border-slate-200 transition">
-            Cancel
-          </button>
-          <button onclick="saveCellEdit()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md transition">
-            Save Changes
-          </button>
-        </div>
+        <button type="button" onclick="applyAdjustedHours()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl shadow-md transition">
+          Apply Adjustment
+        </button>
       </div>
     </div>
   </div>
 
   <!-- Supervisor PIN Authentication Modal -->
-  <div id="supervisorPinModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
-    <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl border border-slate-200 overflow-hidden transform transition-all p-6 text-center">
-      <div class="w-12 h-12 bg-indigo-100 text-indigo-700 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl font-bold shadow-inner">
-        🔒
-      </div>
-      <h3 class="text-base font-black text-slate-900">Supervisor Security Gate</h3>
-      <p class="text-xs text-slate-500 mt-1">Please enter your supervisor authorization PIN to access master editing controls.</p>
+<!-- ... existing code ... -->
+```
 
-      <div class="mt-5 space-y-3">
-        <div class="relative">
-          <input 
-            type="password" 
-            id="supervisorPinInput" 
-            maxlength="8" 
-            placeholder="••••" 
-            autocomplete="off"
-            class="w-full text-center tracking-[0.4em] font-mono text-xl py-2.5 px-4 bg-slate-50 border-2 border-slate-300 rounded-xl focus:border-indigo-600 focus:bg-white focus:outline-none transition"
-            onkeydown="if(event.key==='Enter') verifySupervisorPin()"
-          />
-        </div>
-        
-        <!-- Error alert message container -->
-        <p id="pinErrorMessage" class="hidden text-rose-600 text-xs font-bold animate-pulse flex items-center justify-center gap-1">
-          <span>⚠️</span> <span>Incorrect PIN. Please try again.</span>
-        </p>
-
-        <!-- Quick Numpad for Mobile / Touchscreens -->
-        <div class="grid grid-cols-3 gap-1.5 max-w-[200px] mx-auto pt-1">
-          <button type="button" onclick="appendPinDigit('1')" class="py-2 bg-slate-100 hover:bg-slate-200 font-bold text-sm rounded-lg text-slate-800">1</button>
-          <button type="button" onclick="appendPinDigit('2')" class="py-2 bg-slate-100 hover:bg-slate-200 font-bold text-sm rounded-lg text-slate-800">2</button>
-          <button type="button" onclick="appendPinDigit('3')" class="py-2 bg-slate-100 hover:bg-slate-200 font-bold text-sm rounded-lg text-slate-800">3</button>
-          <button type="button" onclick="appendPinDigit('4')" class="py-2 bg-slate-100 hover:bg-slate-200 font-bold text-sm rounded-lg text-slate-800">4</button>
-          <button type="button" onclick="appendPinDigit('5')" class="py-2 bg-slate-100 hover:bg-slate-200 font-bold text-sm rounded-lg text-slate-800">5</button>
-          <button type="button" onclick="appendPinDigit('6')" class="py-2 bg-slate-100 hover:bg-slate-200 font-bold text-sm rounded-lg text-slate-800">6</button>
-          <button type="button" onclick="appendPinDigit('7')" class="py-2 bg-slate-100 hover:bg-slate-200 font-bold text-sm rounded-lg text-slate-800">7</button>
-          <button type="button" onclick="appendPinDigit('8')" class="py-2 bg-slate-100 hover:bg-slate-200 font-bold text-sm rounded-lg text-slate-800">8</button>
-          <button type="button" onclick="appendPinDigit('9')" class="py-2 bg-slate-100 hover:bg-slate-200 font-bold text-sm rounded-lg text-slate-800">9</button>
-          <button type="button" onclick="clearPinInput()" class="py-2 bg-slate-200 hover:bg-slate-300 font-bold text-xs rounded-lg text-slate-700">C</button>
-          <button type="button" onclick="appendPinDigit('0')" class="py-2 bg-slate-100 hover:bg-slate-200 font-bold text-sm rounded-lg text-slate-800">0</button>
-          <button type="button" onclick="backspacePinDigit()" class="py-2 bg-slate-200 hover:bg-slate-300 font-bold text-xs rounded-lg text-slate-700">⌫</button>
-        </div>
-
-        <div class="flex items-center gap-2 pt-3 border-t border-slate-100">
-          <button type="button" onclick="closeModal('supervisorPinModal')" class="w-1/2 py-2.5 bg-slate-100 hover:bg-slate-200 font-bold text-xs text-slate-700 rounded-xl transition">
-            Cancel
-          </button>
-          <button type="button" onclick="verifySupervisorPin()" class="w-1/2 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition">
-            Unlock
-          </button>
-        </div>
-        <p class="text-[10px] text-slate-400">Default PIN is <span class="font-mono font-bold text-slate-600">1234</span></p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Change PIN Modal -->
-  <div id="changePinModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
-    <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl border border-slate-200 overflow-hidden p-6 text-left">
-      <h3 class="text-base font-black text-slate-900">Change Supervisor PIN</h3>
-      <p class="text-xs text-slate-500 mt-1">Set a new numeric PIN to protect your admin mode from unauthorized staff changes.</p>
-
-      <div class="mt-4 space-y-3 text-xs">
-        <div>
-          <label class="block font-bold text-slate-700 mb-1">New PIN Code:</label>
-          <input type="password" id="newPinInput" maxlength="8" placeholder="e.g. 5821" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-center font-mono text-base tracking-widest focus:ring-2 focus:ring-indigo-500 outline-none">
-        </div>
-        <div>
-          <label class="block font-bold text-slate-700 mb-1">Confirm New PIN:</label>
-          <input type="password" id="confirmPinInput" maxlength="8" placeholder="e.g. 5821" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-center font-mono text-base tracking-widest focus:ring-2 focus:ring-indigo-500 outline-none">
-        </div>
-        <p id="changePinError" class="hidden text-rose-600 font-bold text-[11px]"></p>
-
-        <div class="flex items-center gap-2 pt-3 border-t border-slate-100">
-          <button onclick="closeModal('changePinModal')" class="w-1/2 py-2 bg-slate-100 hover:bg-slate-200 font-bold text-slate-700 rounded-xl">
-            Cancel
-          </button>
-          <button onclick="saveNewSupervisorPin()" class="w-1/2 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md">
-            Save PIN
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // Periods matching school times
-    const PERIODS = [
-      { id: 'p0', label: '7:00 - 7:30 AM', name: 'Before School', startMin: 420, endMin: 450 },
-      { id: 'p1_prep', label: '7:30 - 8:20 AM', name: 'Arrival / Homeroom', startMin: 450, endMin: 500 },
-      { id: 'p1', label: '8:20 - 9:04 AM', name: 'Period 1', startMin: 500, endMin: 544 },
-      { id: 'p2', label: '9:13 - 9:57 AM', name: 'Period 2', startMin: 553, endMin: 597 },
-      { id: 'p3', label: '10:00 - 10:44 AM', name: 'Period 3', startMin: 600, endMin: 644 },
-      { id: 'p4', label: '10:47 - 11:31 AM', name: 'Period 4 (Lunch 1)', startMin: 647, endMin: 691, isLunchSlot: true },
-      { id: 'p5', label: '11:34 - 12:18 PM', name: 'Period 5 (Lunch 2)', startMin: 694, endMin: 738, isLunchSlot: true },
-      { id: 'p6', label: '12:21 - 1:05 PM', name: 'Period 6 (Lunch 3)', startMin: 741, endMin: 785, isLunchSlot: true },
-      { id: 'p7', label: '1:08 - 1:52 PM', name: 'Period 7 (Lunch 4)', startMin: 788, endMin: 832, isLunchSlot: true },
-      { id: 'p8', label: '1:56 - 2:40 PM', name: 'Period 8', startMin: 836, endMin: 880 },
-      { id: 'p_dis', label: '2:40 - 3:00 PM', name: 'Dismissal', startMin: 880, endMin: 900 },
-      { id: 'p_after', label: '3:00 - 5:30 PM', name: 'After School', startMin: 900, endMin: 1050 }
-    ];
-
-    const INITIAL_STAFF = [
-      { id: 'romero', name: 'Ms. Romero', gender: 'F', timeIn: '07:30', timeOut: '15:00', lunchPeriod: 'p6', absent: false },
-      { id: 'reyes', name: 'Ms. Reyes', gender: 'F', timeIn: '07:30', timeOut: '15:00', lunchPeriod: 'p6', absent: false },
-      { id: 'roth', name: 'Ms. Roth', gender: 'F', timeIn: '07:30', timeOut: '15:00', lunchPeriod: 'p7', absent: false },
-      { id: 'ramales', name: 'Ms. Ramales', gender: 'F', timeIn: '07:15', timeOut: '15:15', lunchPeriod: 'p5', absent: false },
-      { id: 'barrios', name: 'Mr. Barrios', gender: 'M', timeIn: '08:00', timeOut: '15:30', lunchPeriod: 'p5', absent: false },
-      { id: 'diaz', name: 'Mr. Diaz', gender: 'M', timeIn: '09:30', timeOut: '17:30', lunchPeriod: 'p8', isFloater: true, absent: false },
-      { id: 'gonzalez', name: 'Mr. Gonzalez', gender: 'M', timeIn: '07:30', timeOut: '15:00', lunchPeriod: 'p6', absent: false },
-      { id: 'vuktilaj', name: 'Ms. Vuktilaj', gender: 'F', timeIn: '09:15', timeOut: '14:30', lunchPeriod: 'p7', absent: false },
-      { id: 'cortes', name: 'Ms. Cortes', gender: 'F', timeIn: '07:30', timeOut: '15:00', lunchPeriod: 'p4', absent: false },
-      { id: 'scott', name: 'John Scott', gender: 'M', timeIn: '08:00', timeOut: '15:30', lunchPeriod: 'p5', absent: false }
-    ];
-
-    const DEFAULT_SCHEDULE = {
-      'romero': {
-        'p0': { text: 'Off Duty', type: 'off' },
-        'p1_prep': { text: 'Bus Arrival Supervision (7:30 - 8:15)', type: 'bus' },
-        'p1': { text: 'Attendance Support w/ Ms. Flack', type: 'attend' },
-        'p_announce': { text: 'Attendance / Hall Transition', type: 'attend' },
-        'p2': { text: 'Admin Support w/ Ms. Tobin (3rd fl)', type: 'admin' },
-        'p3': { text: 'Admin Support w/ Ms. Tobin (3rd fl)', type: 'admin' },
-        'p4': { text: 'Cafeteria Floor Support', type: 'cafe' },
-        'p5': { text: '2nd Floor MS Support', type: 'hall2MS' },
-        'p6': { text: 'LUNCH', type: 'lunch' },
-        'p7': { text: '3rd Floor MS Support', type: 'hall3MS' },
-        'p8': { text: 'Bus Duty (2:00 - Dismissal)', type: 'bus' },
-        'p_dis': { text: 'Bus Duty (2:00 - 3:00 Focus)', type: 'bus' },
-        'p_after': { text: 'Off Duty', type: 'off' }
-      },
-      'reyes': {
-        'p0': { text: 'Off Duty', type: 'off' },
-        'p1_prep': { text: 'Exit 2 Entry Support', type: 'exit' },
-        'p1': { text: '3rd Floor MS Support', type: 'hall3MS' },
-        'p_announce': { text: '3rd Floor MS / Transition', type: 'hall3MS' },
-        'p2': { text: 'Admin Support w/ Mr. McKenzie (2nd fl)', type: 'admin' },
-        'p3': { text: 'Admin Support w/ Mr. McKenzie (2nd fl)', type: 'admin' },
-        'p4': { text: '3rd Floor MS Support', type: 'hall3MS' },
-        'p5': { text: '3rd Floor MS Support', type: 'hall3MS' },
-        'p6': { text: 'LUNCH', type: 'lunch' },
-        'p7': { text: 'Cafeteria (Girls Bathroom)', type: 'girlsBath' },
-        'p8': { text: '2nd Floor MS (Drop cases / guide Exit 3)', type: 'hall2MS' },
-        'p_dis': { text: 'Call 2nd fl clear & return cases', type: 'exit' },
-        'p_after': { text: 'Off Duty', type: 'off' }
-      },
-      'roth': {
-        'p0': { text: 'Off Duty', type: 'off' },
-        'p1_prep': { text: 'Auditorium Supervision', type: 'auditorium' },
-        'p1': { text: 'Auditorium Supervision', type: 'auditorium' },
-        'p_announce': { text: 'Auditorium / Transition', type: 'auditorium' },
-        'p2': { text: 'Admin Support w/ Mr. Gooden (3rd fl)', type: 'admin' },
-        'p3': { text: 'Admin Support w/ Mr. Gooden (3rd fl)', type: 'admin' },
-        'p4': { text: 'Cafeteria (Girls Bathroom)', type: 'girlsBath' },
-        'p5': { text: '3rd Floor HS Support', type: 'hall3HS' },
-        'p6': { text: '3rd Floor HS Support', type: 'hall3HS' },
-        'p7': { text: 'LUNCH', type: 'lunch' },
-        'p8': { text: '3rd Floor MS Support', type: 'hall3MS' },
-        'p_dis': { text: 'Exit 3 Dismissal Supervision', type: 'exit' },
-        'p_after': { text: 'Off Duty', type: 'off' }
-      },
-      'ramales': {
-        'p0': { text: 'Main Office Arrival Support', type: 'mainOffice' },
-        'p1_prep': { text: 'Bring cases to Cafeteria', type: 'cases' },
-        'p1': { text: '3rd Floor HS Hallway Support', type: 'hall3HS' },
-        'p_announce': { text: '3rd Floor HS Support', type: 'hall3HS' },
-        'p2': { text: '2nd Floor HS Hallway Support', type: 'hall2HS' },
-        'p3': { text: '2nd Floor HS Hallway Support', type: 'hall2HS' },
-        'p4': { text: '2nd Floor MS Hallway Support', type: 'hall2MS' },
-        'p5': { text: 'LUNCH', type: 'lunch' },
-        'p6': { text: '3rd Floor MS Support', type: 'hall3MS' },
-        'p7': { text: '3rd Floor HS Hallway Support', type: 'hall3HS' },
-        'p8': { text: '2nd Floor HS / Guide Students', type: 'hall2HS' },
-        'p_dis': { text: 'Support Main Hallway Dismissal', type: 'exit' },
-        'p_after': { text: 'Off Duty', type: 'off' }
-      },
-      'barrios': {
-        'p0': { text: 'Off Duty', type: 'off' },
-        'p1_prep': { text: 'Cafeteria / Bring cases to Main', type: 'cases' },
-        'p1': { text: 'Cafeteria / Return cases to Main', type: 'cases' },
-        'p_announce': { text: '2nd Floor MS Hallway', type: 'hall2MS' },
-        'p2': { text: '2nd Floor MS Support', type: 'hall2MS' },
-        'p3': { text: '2nd Floor MS Support', type: 'hall2MS' },
-        'p4': { text: 'Cafeteria (Boys Bathroom)', type: 'boysBath' },
-        'p5': { text: 'LUNCH', type: 'lunch' },
-        'p6': { text: '2nd Floor MS Support', type: 'hall2MS' },
-        'p7': { text: 'Cafeteria (Boys Bathroom)', type: 'boysBath' },
-        'p8': { text: 'Drop cellphone cases (2nd fl)', type: 'cases' },
-        'p_dis': { text: 'Main for Yondr with magnet cart', type: 'cases' },
-        'p_after': { text: 'Late Duty (until 3:30 PM)', type: 'exit' }
-      },
-      'diaz': {
-        'p0': { text: 'Off Duty', type: 'off' },
-        'p1_prep': { text: 'Off Duty', type: 'off' },
-        'p1': { text: 'Off Duty (Arrives 9:30 AM)', type: 'off' },
-        'p_announce': { text: 'Off Duty (Arrives 9:30 AM)', type: 'off' },
-        'p2': { text: '3rd Floor MS Floater Walk', type: 'walk' },
-        'p3': { text: '3rd Floor MS Floater Walk', type: 'walk' },
-        'p4': { text: 'Cafeteria (Floor / Boys Bath)', type: 'boysBath' },
-        'p5': { text: 'Cafeteria Floor Support', type: 'cafe' },
-        'p6': { text: 'Cafeteria (Boys Bathroom)', type: 'boysBath' },
-        'p7': { text: 'Cafeteria Floor Support', type: 'cafe' },
-        'p8': { text: 'LUNCH (Post-Cafeteria)', type: 'lunch' },
-        'p_dis': { text: 'Security Desk / Dismissal', type: 'security' },
-        'p_after': { text: 'After School Program (until 5:30 PM)', type: 'detention' }
-      },
-      'gonzalez': {
-        'p0': { text: 'Off Duty', type: 'off' },
-        'p1_prep': { text: 'Cafeteria / Bring cases to Main', type: 'cases' },
-        'p1': { text: 'Cafeteria / Return cases to Main', type: 'cases' },
-        'p_announce': { text: '3rd Floor MS Support', type: 'hall3MS' },
-        'p2': { text: '3rd Floor MS Support', type: 'hall3MS' },
-        'p3': { text: '3rd Floor MS Support', type: 'hall3MS' },
-        'p4': { text: '3rd Floor HS Support', type: 'hall3HS' },
-        'p5': { text: 'Cafeteria (Boys Bathroom)', type: 'boysBath' },
-        'p6': { text: 'LUNCH', type: 'lunch' },
-        'p7': { text: '2nd Floor MS Support', type: 'hall2MS' },
-        'p8': { text: '3rd Floor HS Support', type: 'hall3HS' },
-        'p_dis': { text: 'Help Clear 3rd Floor Hallway', type: 'exit' },
-        'p_after': { text: 'Off Duty', type: 'off' }
-      },
-      'vuktilaj': {
-        'p0': { text: 'Off Duty', type: 'off' },
-        'p1_prep': { text: 'Off Duty', type: 'off' },
-        'p1': { text: 'Off Duty (Arrives 9:15 AM)', type: 'off' },
-        'p_announce': { text: 'Off Duty (Arrives 9:15 AM)', type: 'off' },
-        'p2': { text: '2nd Floor MS Support', type: 'hall2MS' },
-        'p3': { text: '2nd Floor MS Support', type: 'hall2MS' },
-        'p4': { text: '2nd Floor HS Support', type: 'hall2HS' },
-        'p5': { text: '2nd Floor HS Support', type: 'hall2HS' },
-        'p6': { text: '2nd Floor HS Support', type: 'hall2HS' },
-        'p7': { text: 'LUNCH', type: 'lunch' },
-        'p8': { text: '2nd Floor HS Support', type: 'hall2HS' },
-        'p_dis': { text: 'Departure at 2:30 PM', type: 'off' },
-        'p_after': { text: 'Off Duty', type: 'off' }
-      },
-      'cortes': {
-        'p0': { text: 'Off Duty', type: 'off' },
-        'p1_prep': { text: 'Exit 2 Entry Support (w/ Ms. Reyes)', type: 'exit' },
-        'p1': { text: '2nd Floor MS Support', type: 'hall2MS' },
-        'p_announce': { text: '2nd Floor MS / Transition', type: 'hall2MS' },
-        'p2': { text: 'Admin Support w/ Ms. Rosa', type: 'admin' },
-        'p3': { text: 'Admin Support w/ Ms. Rosa', type: 'admin' },
-        'p4': { text: 'LUNCH', type: 'lunch' },
-        'p5': { text: 'Cafeteria Floor Support', type: 'cafe' },
-        'p6': { text: 'Cafeteria Floor Support', type: 'cafe' },
-        'p7': { text: '2nd Floor HS Support', type: 'hall2HS' },
-        'p8': { text: 'Drop off cases 3rd floor MS', type: 'cases' },
-        'p_dis': { text: 'Call 3rd floor clear & return cases', type: 'cases' },
-        'p_after': { text: 'Off Duty', type: 'off' }
-      },
-      'scott': {
-        'p0': { text: 'Off Duty', type: 'off' },
-        'p1_prep': { text: 'Tech Support w/ Mr. Ramirez', type: 'tech' },
-        'p1': { text: '2nd Floor HS Hallway Help', type: 'hall2HS' },
-        'p_announce': { text: '2nd Floor HS / Transition', type: 'hall2HS' },
-        'p2': { text: 'Admin Support w/ Ms. Portocarrero', type: 'admin' },
-        'p3': { text: 'Admin Support w/ Ms. Portocarrero', type: 'admin' },
-        'p4': { text: 'Tech Support w/ Mr. Ramirez', type: 'tech' },
-        'p5': { text: 'LUNCH', type: 'lunch' },
-        'p6': { text: 'Tech Support w/ Mr. Ramirez', type: 'tech' },
-        'p7': { text: 'Tech Support w/ Mr. Ramirez', type: 'tech' },
-        'p8': { text: 'Tech Support w/ Mr. Ramirez', type: 'tech' },
-        'p_dis': { text: 'Tech Support / Dismissal', type: 'tech' },
-        'p_after': { text: 'Late Tech Duty (until 3:30 PM)', type: 'tech' }
-      }
-    };
-
+```html:School Aide Daily Coverage & Swap Manager:index.html
+<!-- ... existing code ... -->
     let staffList = JSON.parse(JSON.stringify(INITIAL_STAFF));
     let scheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
+
+    // Track daily partial hour modifications (e.g. { romero: { latePeriod: 'p3', earlyPeriod: null } })
+    let dailyAdjustments = {};
 
     let currentAppMode = 'admin'; // 'admin' | 'staff'
     let activeMainView = 'master'; // 'master' | 'floors' | 'periods' | 'staffsite'
@@ -730,6 +200,7 @@
     let currentEditPeriodId = null;
     let selectedStaffAideId = null;
     let supervisorPin = '1234';
+    let currentAdjustType = 'late';
     const TODAY_KEY = new Date().toISOString().split('T')[0];
 
     try {
@@ -737,14 +208,31 @@
       if (savedPin) supervisorPin = savedPin;
       
       const savedDate = localStorage.getItem('school_aide_last_active_date');
-      // Only restore previous session if it was made on today's date; otherwise start fresh
+      // Read saved roster or baseline
+      const savedStaff = localStorage.getItem('school_aide_live_roster');
+      if (savedStaff) {
+        staffList = JSON.parse(savedStaff);
+        // Ensure new additions are also in DEFAULT_SCHEDULE baseline
+        staffList.forEach(st => {
+          if (!DEFAULT_SCHEDULE[st.id]) {
+            DEFAULT_SCHEDULE[st.id] = {};
+            PERIODS.forEach(per => {
+              if (per.id === st.lunchPeriod) {
+                DEFAULT_SCHEDULE[st.id][per.id] = { text: 'LUNCH', type: 'lunch' };
+              } else {
+                DEFAULT_SCHEDULE[st.id][per.id] = { text: 'Available', type: 'plain' };
+              }
+            });
+          }
+        });
+      }
+
       if (savedDate === TODAY_KEY) {
         const savedSched = localStorage.getItem('school_aide_live_schedule');
         if (savedSched) scheduleData = JSON.parse(savedSched);
-        const savedStaff = localStorage.getItem('school_aide_live_roster');
-        if (savedStaff) staffList = JSON.parse(savedStaff);
+        const savedAdj = localStorage.getItem('school_aide_daily_adjustments');
+        if (savedAdj) dailyAdjustments = JSON.parse(savedAdj);
       } else {
-        // Automatically start with a fresh default schedule for each new day
         localStorage.setItem('school_aide_last_active_date', TODAY_KEY);
       }
     } catch (e) {
@@ -756,317 +244,35 @@
         localStorage.setItem('school_aide_last_active_date', TODAY_KEY);
         localStorage.setItem('school_aide_live_schedule', JSON.stringify(scheduleData));
         localStorage.setItem('school_aide_live_roster', JSON.stringify(staffList));
+        localStorage.setItem('school_aide_daily_adjustments', JSON.stringify(dailyAdjustments));
       } catch (e) {}
     }
 
     function timeToMinutes(tStr) {
-      if (!tStr) return 0;
-      const [h, m] = tStr.split(':').map(Number);
-      return h * 60 + m;
-    }
+<!-- ... existing code ... -->
+```
 
-    function getStyleForType(type) {
-      switch(type) {
-        case 'lunch': return 'bg-amber-200 text-amber-950 font-black border-l-4 border-l-amber-600';
-        case 'cafe': return 'bg-orange-200 text-orange-950 font-bold border-l-4 border-l-orange-500';
-        case 'boysBath': return 'bg-blue-200 text-blue-950 font-extrabold border-l-4 border-l-blue-600';
-        case 'girlsBath': return 'bg-rose-200 text-rose-950 font-bold border-l-4 border-l-rose-500';
-        case 'hall2MS': return 'bg-emerald-200 text-emerald-950 font-bold border-l-4 border-l-emerald-600';
-        case 'hall2HS': return 'bg-teal-200 text-teal-950 font-bold border-l-4 border-l-teal-600';
-        case 'hall3MS': return 'bg-sky-200 text-sky-950 font-bold border-l-4 border-l-sky-600';
-        case 'hall3HS': return 'bg-indigo-200 text-indigo-950 font-bold border-l-4 border-l-indigo-600';
-        case 'admin': return 'bg-purple-200 text-purple-950 font-bold border-l-4 border-l-purple-600';
-        case 'tech': return 'bg-cyan-200 text-cyan-950 font-bold border-l-4 border-l-cyan-600';
-        case 'attend': return 'bg-red-200 text-red-950 font-bold border-l-4 border-l-red-500';
-        case 'mainOffice': return 'bg-blue-100 text-blue-950 font-bold border-l-4 border-l-blue-500';
-        case 'utility': return 'bg-zinc-200 text-zinc-900 font-bold border-l-4 border-l-zinc-500';
-        case 'auditorium': return 'bg-fuchsia-200 text-fuchsia-950 font-bold border-l-4 border-l-fuchsia-600';
-        case 'bus': return 'bg-yellow-300 text-yellow-950 font-extrabold border-l-4 border-l-yellow-600';
-        case 'cases': return 'bg-lime-200 text-lime-950 font-bold border-l-4 border-l-lime-600';
-        case 'walk': return 'bg-pink-300 text-pink-950 font-black border-l-4 border-l-pink-600';
-        case 'exit': return 'bg-slate-200 text-slate-900 font-bold border-l-4 border-l-slate-500';
-        case 'security': return 'bg-violet-200 text-violet-950 font-bold border-l-4 border-l-violet-600';
-        case 'packages': return 'bg-amber-300 text-stone-950 font-bold border-l-4 border-l-amber-700';
-        case 'detention': return 'bg-rose-300 text-rose-950 font-black border-l-4 border-l-rose-700';
-        case 'off': return 'bg-slate-100 text-slate-400 font-normal border-l-2 border-l-slate-300';
-        default: return 'bg-white text-slate-700 border-l-2 border-slate-200';
-      }
-    }
-
-    function normalizeFloorCategory(slot) {
-      if (!slot || !slot.text) return null;
-      const t = slot.text.toLowerCase();
-      const type = slot.type;
-
-      if (type === 'hall2MS' || (t.includes('2nd') && (t.includes('ms') || t.includes('mckenzie') || t.includes('rosa')))) return 'hall2MS';
-      if (type === 'hall2HS' || (t.includes('2nd') && t.includes('hs'))) return 'hall2HS';
-      if (type === 'hall3MS' || (t.includes('3rd') && t.includes('ms'))) return 'hall3MS';
-      if (type === 'hall3HS' || (t.includes('3rd') && (t.includes('hs') || t.includes('tobin') || t.includes('gooden') || t.includes('portocarrero')))) return 'hall3HS';
-      return null;
-    }
-
-    function renderFloorMonitorAndRadar() {
-      const miniMatrix = document.getElementById('floorMiniMatrix');
-      const radarBody = document.getElementById('floorRadarTableBody');
-      const summaryPill = document.getElementById('floorSummaryPill');
-      const badgeStatus = document.getElementById('floorBadgeStatus');
-
-      if (!miniMatrix) return;
-      miniMatrix.innerHTML = '';
-      if (radarBody) radarBody.innerHTML = '';
-
-      const mainPeriods = PERIODS.filter(p => p.id.startsWith('p') && p.id !== 'p0' && p.id !== 'p1_prep' && p.id !== 'p_dis' && p.id !== 'p_after');
-
-      let totalSlots = mainPeriods.length * 4; // 8 periods * 4 zones = 32 slots
-      let coveredSlots = 0;
-
-      mainPeriods.forEach(period => {
-        const floorAides = {
-          'hall2MS': [],
-          'hall2HS': [],
-          'hall3MS': [],
-          'hall3HS': []
-        };
-
-        staffList.forEach(aide => {
-          if (aide.absent) return;
-          const slot = scheduleData[aide.id] && scheduleData[aide.id][period.id];
-          const cat = normalizeFloorCategory(slot);
-          if (cat && floorAides[cat]) {
-            floorAides[cat].push(aide.name);
-          }
-        });
-
-        const c2MS = floorAides['hall2MS'].length;
-        const c2HS = floorAides['hall2HS'].length;
-        const c3MS = floorAides['hall3MS'].length;
-        const c3HS = floorAides['hall3HS'].length;
-
-        const periodCoveredCount = (c2MS > 0 ? 1 : 0) + (c2HS > 0 ? 1 : 0) + (c3MS > 0 ? 1 : 0) + (c3HS > 0 ? 1 : 0);
-        coveredSlots += periodCoveredCount;
-        const allCovered = periodCoveredCount === 4;
-
-        // Mini Matrix Card
-        const miniCard = document.createElement('div');
-        miniCard.className = `p-2 rounded-xl border flex flex-col items-center justify-center transition-all ${
-          allCovered 
-            ? 'bg-emerald-50/70 border-emerald-200 text-emerald-950' 
-            : 'bg-amber-50 border-amber-300 text-amber-950'
-        }`;
-        miniCard.innerHTML = `
-          <div class="font-extrabold text-[11px]">${period.name.replace('Period ', 'P')}</div>
-          <div class="flex items-center gap-1 mt-1">
-            <span title="2nd MS" class="w-2.5 h-2.5 rounded-full ${c2MS > 0 ? 'bg-emerald-500' : 'bg-rose-400 animate-pulse'}"></span>
-            <span title="2nd HS" class="w-2.5 h-2.5 rounded-full ${c2HS > 0 ? 'bg-teal-500' : 'bg-rose-400 animate-pulse'}"></span>
-            <span title="3rd MS" class="w-2.5 h-2.5 rounded-full ${c3MS > 0 ? 'bg-sky-500' : 'bg-rose-400 animate-pulse'}"></span>
-            <span title="3rd HS" class="w-2.5 h-2.5 rounded-full ${c3HS > 0 ? 'bg-indigo-500' : 'bg-rose-400 animate-pulse'}"></span>
-          </div>
-          <span class="text-[9px] mt-1 font-bold ${allCovered ? 'text-emerald-700' : 'text-amber-800'}">${periodCoveredCount}/4 Floors</span>
-        `;
-        miniMatrix.appendChild(miniCard);
-
-        // Radar Table Row
-        if (radarBody) {
-          const tr = document.createElement('tr');
-          tr.className = allCovered ? 'hover:bg-slate-50' : 'bg-rose-50/40 hover:bg-rose-50';
-
-          const formatList = (arr, colorClass) => {
-            if (arr.length === 0) return '<span class="text-rose-600 font-extrabold text-[11px] flex items-center gap-1">⚠️ GAP</span>';
-            return arr.map(name => `<span class="inline-block px-2 py-0.5 rounded font-bold ${colorClass} text-[10px] m-0.5">${name}</span>`).join('');
-          };
-
-          tr.innerHTML = `
-            <td class="py-2.5 px-3.5 font-bold text-slate-800">
-              <div>${period.name}</div>
-              <div class="text-[10px] text-slate-500 font-mono">${period.label}</div>
-            </td>
-            <td class="py-2.5 px-3 border-l border-slate-200">${formatList(floorAides['hall2MS'], 'bg-emerald-100 text-emerald-900 border border-emerald-300')}</td>
-            <td class="py-2.5 px-3 border-l border-slate-200">${formatList(floorAides['hall2HS'], 'bg-teal-100 text-teal-900 border border-teal-300')}</td>
-            <td class="py-2.5 px-3 border-l border-slate-200">${formatList(floorAides['hall3MS'], 'bg-sky-100 text-sky-900 border border-sky-300')}</td>
-            <td class="py-2.5 px-3 border-l border-slate-200">${formatList(floorAides['hall3HS'], 'bg-indigo-100 text-indigo-900 border border-indigo-300')}</td>
-            <td class="py-2.5 px-3 border-l border-slate-200 text-center">
-              ${allCovered ? `
-                <span class="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 text-[10px] font-black px-2 py-0.5 rounded-full">
-                  ✓ Full 4/4
-                </span>
-              ` : `
-                <span class="inline-flex items-center gap-1 bg-rose-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
-                  ⚠️ ${4 - periodCoveredCount} Gaps
-                </span>
-              `}
-            </td>
-          `;
-          radarBody.appendChild(tr);
-        }
-      });
-
-      const pct = Math.round((coveredSlots / totalSlots) * 100);
-      if (summaryPill) {
-        if (pct === 100) {
-          summaryPill.className = 'font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200';
-          summaryPill.innerText = '100% All Floors Covered';
-        } else {
-          summaryPill.className = 'font-extrabold text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded-md border border-rose-200';
-          summaryPill.innerText = `${pct}% Coverage (${totalSlots - coveredSlots} Open Floor Slots)`;
-        }
-      }
-      if (badgeStatus) {
-        badgeStatus.innerText = `${pct}%`;
-        badgeStatus.className = (pct === 100) 
-          ? 'bg-emerald-100 text-emerald-800 text-[9px] font-black px-1.5 py-0.5 rounded' 
-          : 'bg-rose-100 text-rose-800 text-[9px] font-black px-1.5 py-0.5 rounded animate-pulse';
-      }
-    }
-
-    function setAppMode(mode) {
-      currentAppMode = mode;
-
-      const adminWidgets = document.getElementById('adminDashboardWidgets');
-      const adminNav = document.getElementById('adminNavControls');
-      const staffNav = document.getElementById('staffNavControls');
-      const titleBadge = document.getElementById('appHeaderBadge');
-      const headerTitle = document.getElementById('appHeaderTitle');
-
-      if (mode === 'staff') {
-        window.location.hash = 'staff';
-        if (adminWidgets) adminWidgets.classList.add('hidden');
-        if (adminNav) adminNav.classList.add('hidden');
-        if (staffNav) staffNav.classList.remove('hidden');
-        if (titleBadge) {
-          titleBadge.className = 'bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider';
-          titleBadge.innerText = 'Staff Portal (Read-Only)';
-        }
-        if (headerTitle) headerTitle.innerText = 'School Aide Daily Board';
-
-        switchView('staffsite');
-      } else {
-        if (window.location.hash === '#staff') {
-          history.pushState('', document.title, window.location.pathname + window.location.search);
-        }
-        if (adminWidgets) adminWidgets.classList.remove('hidden');
-        if (adminNav) adminNav.classList.remove('hidden');
-        if (staffNav) staffNav.classList.add('hidden');
-        if (titleBadge) {
-          titleBadge.className = 'bg-indigo-100 text-indigo-800 text-[10px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider';
-          titleBadge.innerText = 'Supervisor Admin';
-        }
-        if (headerTitle) headerTitle.innerText = 'School Aide Coverage Hub';
-
-        switchView('master');
-      }
-
-      updateAllDisplays();
-    }
-
-    function promptSupervisorUnlock() {
-      const pinModal = document.getElementById('supervisorPinModal');
-      const pinInput = document.getElementById('supervisorPinInput');
-      const errorMsg = document.getElementById('pinErrorMessage');
-      
-      if (pinInput) pinInput.value = '';
-      if (errorMsg) errorMsg.classList.add('hidden');
-      if (pinModal) {
-        pinModal.classList.remove('hidden');
-        pinModal.classList.add('flex');
-      }
-
-      setTimeout(() => {
-        if (pinInput) pinInput.focus();
-      }, 150);
-    }
-
-    function appendPinDigit(digit) {
-      const input = document.getElementById('supervisorPinInput');
-      if (input && input.value.length < 8) {
-        input.value += digit;
-      }
-    }
-
-    function clearPinInput() {
-      const input = document.getElementById('supervisorPinInput');
-      if (input) input.value = '';
-    }
-
-    function backspacePinDigit() {
-      const input = document.getElementById('supervisorPinInput');
-      if (input && input.value.length > 0) {
-        input.value = input.value.slice(0, -1);
-      }
-    }
-
-    function verifySupervisorPin() {
-      const input = document.getElementById('supervisorPinInput');
-      const errorMsg = document.getElementById('pinErrorMessage');
-      const enteredPin = input ? input.value.trim() : '';
-
-      if (enteredPin === supervisorPin) {
-        closeModal('supervisorPinModal');
-        setAppMode('admin');
-        showToast('🔓 Supervisor Access Granted', 'indigo');
-      } else {
-        if (errorMsg) errorMsg.classList.remove('hidden');
-        if (input) {
-          input.value = '';
-          input.classList.add('border-rose-500', 'animate-shake');
-          setTimeout(() => input.classList.remove('border-rose-500', 'animate-shake'), 1000);
-        }
-      }
-    }
-
-    function lockToStaffMode() {
-      setAppMode('staff');
-      showToast('🔒 Locked in Staff Mode', 'rose');
-    }
-
-    function openChangePinModal() {
-      const modal = document.getElementById('changePinModal');
-      const err = document.getElementById('changePinError');
-      document.getElementById('newPinInput').value = '';
-      document.getElementById('confirmPinInput').value = '';
-      if (err) err.classList.add('hidden');
-      if (modal) {
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-      }
-    }
-
-    function saveNewSupervisorPin() {
-      const newPin = document.getElementById('newPinInput').value.trim();
-      const confirmPin = document.getElementById('confirmPinInput').value.trim();
-      const err = document.getElementById('changePinError');
-
-      if (!newPin || newPin.length < 3) {
-        err.innerText = 'PIN must be at least 3 digits.';
-        err.classList.remove('hidden');
-        return;
-      }
-
-      if (newPin !== confirmPin) {
-        err.innerText = 'PIN confirmation does not match.';
-        err.classList.remove('hidden');
-        return;
-      }
-
-      supervisorPin = newPin;
-      try {
-        localStorage.setItem('school_aide_supervisor_pin', newPin);
-      } catch (e) {}
-      closeModal('changePinModal');
-      showToast('New Supervisor PIN saved successfully!', 'emerald');
-    }
-
-    function renderMasterGrid() {
-      const theadRow = document.getElementById('masterTheadRow');
-      const tbody = document.getElementById('masterTbody');
-
-      let headerHTML = `
-        <th class="py-3 px-3.5 bg-slate-900 border-r border-slate-700 w-36 table-sticky-col">
-          <div class="font-black text-slate-200">Period / Time</div>
-        </th>
-      `;
-
+```html:School Aide Daily Coverage & Swap Manager:index.html
+<!-- ... existing code ... -->
       staffList.forEach(aide => {
         const isAbsent = aide.absent;
+        const adj = dailyAdjustments[aide.id];
+        let subBadge = '';
+
+        if (isAbsent) {
+          subBadge = '<div class="text-[9px] bg-rose-600 text-white font-black rounded px-1 mt-0.5 animate-pulse">CALLED OUT</div>';
+        } else if (adj) {
+          if (adj.latePeriod && adj.earlyPeriod) {
+            subBadge = '<div class="text-[9px] bg-amber-500 text-white font-bold rounded px-1 mt-0.5">PARTIAL HOURS</div>';
+          } else if (adj.latePeriod) {
+            const pObj = PERIODS.find(p => p.id === adj.latePeriod);
+            subBadge = `<div class="text-[9px] bg-amber-500 text-white font-bold rounded px-1 mt-0.5">LATE (In ${pObj ? pObj.name.replace('Period ','P') : ''})</div>`;
+          } else if (adj.earlyPeriod) {
+            const pObj = PERIODS.find(p => p.id === adj.earlyPeriod);
+            subBadge = `<div class="text-[9px] bg-orange-500 text-white font-bold rounded px-1 mt-0.5">OUT (After ${pObj ? pObj.name.replace('Period ','P') : ''})</div>`;
+          }
+        }
+
         headerHTML += `
           <th class="py-2.5 px-2.5 border-r border-slate-700 text-center min-w-[130px] max-w-[150px] ${
             isAbsent ? 'bg-rose-950/80 text-rose-300' : 'bg-slate-800 text-white'
@@ -1077,66 +283,16 @@
             <div class="text-[9px] font-medium text-slate-400 mt-0.5">
               ${aide.timeIn} - ${aide.timeOut}
             </div>
-            ${isAbsent ? `
-              <div class="text-[9px] bg-rose-600 text-white font-black rounded px-1 mt-0.5 animate-pulse">
-                CALLED OUT
-              </div>
-            ` : ''}
+            ${subBadge}
           </th>
         `;
       });
       theadRow.innerHTML = headerHTML;
+<!-- ... existing code ... -->
+```
 
-      let bodyHTML = '';
-      PERIODS.forEach(period => {
-        bodyHTML += `<tr>`;
-        bodyHTML += `
-          <td class="py-2.5 px-3 bg-slate-50 border-r border-b border-slate-200 table-sticky-col font-semibold">
-            <div class="font-black text-slate-900 text-xs">${period.name}</div>
-            <div class="text-[10px] text-indigo-700 font-mono font-medium">${period.label}</div>
-          </td>
-        `;
-
-        staffList.forEach(aide => {
-          const isAbsent = aide.absent;
-          const slot = (scheduleData[aide.id] && scheduleData[aide.id][period.id]) 
-            ? scheduleData[aide.id][period.id] 
-            : { text: 'Available', type: 'plain' };
-
-          let cellStyle = getStyleForType(slot.type);
-          let content = slot.text;
-
-          if (isAbsent) {
-            if (slot.type === 'lunch' || slot.type === 'off') {
-              cellStyle = 'bg-slate-100 text-slate-400 italic';
-            } else {
-              cellStyle = 'bg-rose-100 text-rose-900 border-2 border-dashed border-rose-400 font-bold';
-              content = `⚠️ OPEN (${slot.text})`;
-            }
-          }
-
-          const clickAction = (currentAppMode === 'admin') 
-            ? `onclick="openCellModal('${aide.id}', '${period.id}')"` 
-            : '';
-          const cursorClass = (currentAppMode === 'admin') ? 'cursor-pointer hover:ring-2 hover:ring-indigo-500/70' : 'cursor-default';
-
-          bodyHTML += `
-            <td ${clickAction}
-                class="py-2 px-2 border-r border-b border-slate-200 text-center transition-all select-none ${cursorClass} ${cellStyle}"
-                title="${currentAppMode === 'admin' ? 'Click to edit or reassign' : ''}">
-              <div class="text-[11px] leading-tight line-clamp-3">
-                ${content}
-              </div>
-            </td>
-          `;
-        });
-
-        bodyHTML += `</tr>`;
-      });
-
-      tbody.innerHTML = bodyHTML;
-    }
-
+```html:School Aide Daily Coverage & Swap Manager:index.html
+<!-- ... existing code ... -->
     function renderQuickAbsencePills() {
       const container = document.getElementById('quickAbsencePills');
       container.innerHTML = '';
@@ -1146,31 +302,62 @@
 
       staffList.forEach(aide => {
         if (aide.absent) absentCount++;
+        const adj = dailyAdjustments[aide.id];
 
-        const pill = document.createElement('button');
-        pill.onclick = () => toggleStaffAbsence(aide.id);
-        pill.className = `px-3 py-1.5 rounded-xl text-xs font-extrabold border transition-all flex items-center gap-1.5 shadow-2xs ${
+        const pillWrapper = document.createElement('div');
+        pillWrapper.className = 'inline-flex items-center rounded-xl border transition-all shadow-2xs overflow-hidden ' + (
           aide.absent 
             ? 'bg-rose-600 text-white border-rose-700 shadow-md ring-2 ring-rose-300' 
-            : 'bg-slate-50 hover:bg-slate-100 text-slate-800 border-slate-300'
-        }`;
+            : (adj ? 'bg-amber-50 border-amber-300 text-amber-950 ring-1 ring-amber-300' : 'bg-slate-50 hover:bg-slate-100 text-slate-800 border-slate-300')
+        );
 
-        pill.innerHTML = `
+        // Clickable main button for absence
+        const pillBtn = document.createElement('button');
+        pillBtn.onclick = () => toggleStaffAbsence(aide.id);
+        pillBtn.className = 'px-3 py-1.5 text-xs font-extrabold flex items-center gap-1.5 text-left';
+        
+        let labelExtra = '';
+        if (aide.absent) {
+          labelExtra = '<span class="ml-1 text-[9px] bg-black/30 px-1.5 rounded">ABSENT</span>';
+        } else if (adj) {
+          if (adj.latePeriod && adj.earlyPeriod) labelExtra = '<span class="ml-1 text-[9px] bg-amber-600 text-white px-1 rounded font-bold">Partial</span>';
+          else if (adj.latePeriod) labelExtra = '<span class="ml-1 text-[9px] bg-amber-600 text-white px-1 rounded font-bold">Late</span>';
+          else if (adj.earlyPeriod) labelExtra = '<span class="ml-1 text-[9px] bg-orange-600 text-white px-1 rounded font-bold">Early Out</span>';
+        }
+
+        pillBtn.innerHTML = `
           <span>${aide.absent ? '🚨' : (aide.gender === 'M' ? '👨' : '👩')}</span>
           <span>${aide.name}</span>
           <span class="text-[10px] opacity-80">(${aide.timeIn.substring(0,5)}-${aide.timeOut.substring(0,5)})</span>
-          ${aide.absent ? '<span class="ml-1 text-[9px] bg-black/30 px-1.5 rounded">ABSENT</span>' : ''}
+          ${labelExtra}
         `;
-        container.appendChild(pill);
+
+        // Small ⏱️ button to quickly adjust hours for this staff member
+        const timeBtn = document.createElement('button');
+        timeBtn.onclick = (e) => {
+          e.stopPropagation();
+          openAdjustHoursModal(aide.id);
+        };
+        timeBtn.title = 'Log Late Arrival or Early Departure';
+        timeBtn.className = 'px-2 py-1.5 text-xs border-l hover:bg-black/10 transition ' + (aide.absent ? 'border-rose-500 text-white' : 'border-slate-200 text-slate-600 hover:text-slate-900');
+        timeBtn.innerHTML = '⏱️';
+
+        pillWrapper.appendChild(pillBtn);
+        pillWrapper.appendChild(timeBtn);
+        container.appendChild(pillWrapper);
       });
 
+      // Count all open duties needing coverage (including full absence and late/early)
       PERIODS.forEach(period => {
         staffList.forEach(aide => {
+          const slot = scheduleData[aide.id] && scheduleData[aide.id][period.id];
+          if (!slot) return;
           if (aide.absent) {
-            const slot = scheduleData[aide.id] && scheduleData[aide.id][period.id];
-            if (slot && slot.type !== 'lunch' && slot.type !== 'off' && !slot.text.includes('Covered by')) {
+            if (slot.type !== 'lunch' && slot.type !== 'off' && !slot.text.includes('Covered by')) {
               openDutiesCount++;
             }
+          } else if (slot.text && (slot.text.includes('⚠️ LATE ARRIVAL') || slot.text.includes('⚠️ EARLY DEPARTURE')) && !slot.text.includes('Covered by')) {
+            openDutiesCount++;
           }
         });
       });
@@ -1178,83 +365,64 @@
       const headerSummary = document.getElementById('calloutSummaryBadge');
       const uncoveredBadge = document.getElementById('uncoveredCounter');
 
-      if (absentCount === 0) {
+      if (absentCount === 0 && Object.keys(dailyAdjustments).length === 0) {
         headerSummary.className = 'text-emerald-700 font-bold';
-        headerSummary.innerText = 'All 10 Staff Present';
+        headerSummary.innerText = `All ${staffList.length} Staff Present`;
         uncoveredBadge.className = 'bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2 py-0.5 rounded-full';
         uncoveredBadge.innerText = '0 Open Posts';
       } else {
+        const adjustCount = Object.keys(dailyAdjustments).length;
         headerSummary.className = 'text-rose-600 font-black';
-        headerSummary.innerText = `${absentCount} Called Out Today`;
-        uncoveredBadge.className = 'bg-rose-600 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full animate-bounce';
-        uncoveredBadge.innerText = `${openDutiesCount} Duties Need Coverage!`;
+        headerSummary.innerText = `${absentCount} Absent${adjustCount > 0 ? ` • ${adjustCount} Late/Early` : ''}`;
+        uncoveredBadge.className = openDutiesCount > 0 ? 'bg-rose-600 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full animate-bounce' : 'bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2 py-0.5 rounded-full';
+        uncoveredBadge.innerText = openDutiesCount > 0 ? `${openDutiesCount} Duties Need Coverage!` : 'All Covered';
       }
     }
+<!-- ... existing code ... -->
+```
 
-    function toggleStaffAbsence(aideId) {
-      const aide = staffList.find(a => a.id === aideId);
-      if (!aide) return;
-      aide.absent = !aide.absent;
-
-      if (aide.absent) {
-        showToast('🚨 ' + aide.name + ' marked absent.', 'rose');
-      } else {
-        // 1. Restore this aide's own default schedule
-        Object.keys(DEFAULT_SCHEDULE[aide.id]).forEach(pId => {
-          scheduleData[aide.id][pId] = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE[aide.id][pId]));
-        });
-
-        // 2. Find ANY other aide who was assigned to cover this aide, and restore them back to their default assignment
-        staffList.forEach(otherAide => {
-          if (otherAide.id === aide.id) return;
-          PERIODS.forEach(per => {
-            const slot = scheduleData[otherAide.id] && scheduleData[otherAide.id][per.id];
-            if (slot && slot.text && slot.text.indexOf('(Covering ' + aide.name + ')') !== -1) {
-              scheduleData[otherAide.id][per.id] = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE[otherAide.id][per.id]));
-            }
-          });
-        });
-
-        // 3. If all staff are now present, perform a complete cleanup to remove any remaining coverage artifacts
-        const stillAbsent = staffList.some(a => a.absent);
-        if (!stillAbsent) {
-          staffList.forEach(st => {
-            PERIODS.forEach(per => {
-              const s = scheduleData[st.id] && scheduleData[st.id][per.id];
-              if (s && (s.text.indexOf('Covered by') !== -1 || s.text.indexOf('(Covering') !== -1)) {
-                scheduleData[st.id][per.id] = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE[st.id][per.id]));
-              }
-            });
-          });
-        }
-
-        showToast('✅ ' + aide.name + ' marked Present (covering staff reverted)', 'emerald');
-      }
-
-      saveScheduleState();
-      updateAllDisplays();
-    }
-
+```html:School Aide Daily Coverage & Swap Manager:index.html
+<!-- ... existing code ... -->
     function autoFillAllOpenPosts() {
       let reassignedCount = 0;
 
       PERIODS.forEach(period => {
-        staffList.forEach(absentAide => {
-          if (!absentAide.absent) return;
-          
-          // Always reference the baseline post from DEFAULT_SCHEDULE so duties aren't corrupted
-          const baselineSlot = DEFAULT_SCHEDULE[absentAide.id] && DEFAULT_SCHEDULE[absentAide.id][period.id];
-          const currentSlot = scheduleData[absentAide.id] && scheduleData[absentAide.id][period.id];
-          const vacantSlot = baselineSlot || currentSlot;
+        staffList.forEach(aide => {
+          const currentSlot = scheduleData[aide.id] && scheduleData[aide.id][period.id];
+          if (!currentSlot) return;
 
-          if (!vacantSlot || vacantSlot.type === 'lunch' || vacantSlot.type === 'off') return;
-          if (currentSlot && currentSlot.text.indexOf('Covered by') !== -1) return;
+          // Check if this slot needs coverage: full absence OR late/early
+          const isSlotOpenDueToAbsence = aide.absent && currentSlot.type !== 'lunch' && currentSlot.type !== 'off' && !currentSlot.text.includes('Covered by');
+          const isSlotOpenDueToPartial = !aide.absent && (currentSlot.text.includes('⚠️ LATE ARRIVAL') || currentSlot.text.includes('⚠️ EARLY DEPARTURE')) && !currentSlot.text.includes('Covered by');
 
-          const needsMale = (vacantSlot.type === 'boysBath' || vacantSlot.text.toLowerCase().indexOf('boys bathroom') !== -1);
+          if (!isSlotOpenDueToAbsence && !isSlotOpenDueToPartial) return;
+
+          // Extract original post details
+          const baselineSlot = DEFAULT_SCHEDULE[aide.id] && DEFAULT_SCHEDULE[aide.id][period.id];
+          const postText = currentSlot.originalDuty || (baselineSlot ? baselineSlot.text : currentSlot.text.replace(/⚠️\s*(LATE ARRIVAL|EARLY DEPARTURE)\s*\((.*?)\)/, '$2'));
+          const postType = currentSlot.originalType || (baselineSlot ? baselineSlot.type : currentSlot.type);
+
+          if (!postText || postType === 'lunch' || postType === 'off') return;
+
+          const needsMale = (postType === 'boysBath' || postText.toLowerCase().includes('boys bathroom'));
 
           const candidate = staffList.find(c => {
-            if (c.absent) return false;
+            if (c.id === aide.id || c.absent) return false;
             if (needsMale && c.gender !== 'M') return false;
+
+            // Check if candidate is present during this period considering any late/early adjustments
+            const cAdj = dailyAdjustments[c.id];
+            if (cAdj) {
+              const pIdx = PERIODS.findIndex(p => p.id === period.id);
+              if (cAdj.latePeriod) {
+                const lateIdx = PERIODS.findIndex(p => p.id === cAdj.latePeriod);
+                if (pIdx < lateIdx) return false; // candidate hasn't arrived yet
+              }
+              if (cAdj.earlyPeriod) {
+                const earlyIdx = PERIODS.findIndex(p => p.id === cAdj.earlyPeriod);
+                if (pIdx > earlyIdx) return false; // candidate already left
+              }
+            }
 
             const cIn = timeToMinutes(c.timeIn);
             const cOut = timeToMinutes(c.timeOut);
@@ -1273,12 +441,14 @@
 
           if (candidate) {
             scheduleData[candidate.id][period.id] = {
-              text: vacantSlot.text.replace(/\s*\(Covering.*?\)/g, '') + ' (Covering ' + absentAide.name + ')',
-              type: vacantSlot.type
+              text: postText.replace(/\s*\(Covering.*?\)/g, '') + ` (Covering ${aide.name})`,
+              type: postType
             };
-            scheduleData[absentAide.id][period.id] = {
-              text: 'Covered by ' + candidate.name,
-              type: 'plain'
+            scheduleData[aide.id][period.id] = {
+              text: `Covered by ${candidate.name}`,
+              type: 'plain',
+              originalDuty: postText,
+              originalType: postType
             };
             reassignedCount++;
           }
@@ -1288,7 +458,7 @@
       saveScheduleState();
 
       if (reassignedCount > 0) {
-        showToast('Auto-assigned ' + reassignedCount + ' uncovered duty shifts!', 'emerald');
+        showToast(`Auto-assigned ${reassignedCount} uncovered duty shifts!`, 'emerald');
       } else {
         showToast('All open duties already covered or no available staff.', 'indigo');
       }
@@ -1296,502 +466,268 @@
       updateAllDisplays();
     }
 
-    function initPeriodFilterOptions() {
-      const select = document.getElementById('periodFilterSelect');
-      if (!select) return;
-      select.innerHTML = '<option value="ALL">Show All Periods</option>';
-      PERIODS.forEach(p => {
-        const opt = document.createElement('option');
-        opt.value = p.id;
-        opt.innerText = `${p.name} (${p.label})`;
-        select.appendChild(opt);
-      });
-    }
-
-    function renderPeriodBreakdown() {
-      const container = document.getElementById('periodCardsGrid');
-      const selectElem = document.getElementById('periodFilterSelect');
-      if (!container || !selectElem) return;
+    // ==========================================
+    // ADD NEW STAFF MEMBER LOGIC
+    // ==========================================
+    function openAddStaffModal() {
+      if (currentAppMode !== 'admin') {
+        promptSupervisorUnlock();
+        return;
+      }
+      document.getElementById('newStaffNameInput').value = '';
+      document.getElementById('newStaffFloaterInput').checked = false;
+      document.getElementById('addStaffError').classList.add('hidden');
       
-      const selectedPeriod = selectElem.value;
-      container.innerHTML = '';
-
-      const filteredPeriods = selectedPeriod === 'ALL' 
-        ? PERIODS 
-        : PERIODS.filter(p => p.id === selectedPeriod);
-
-      filteredPeriods.forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'bg-white rounded-2xl border border-slate-200 shadow-xs p-4 flex flex-col justify-between';
-
-        let staffListHTML = '';
-        staffList.forEach(aide => {
-          const slot = scheduleData[aide.id] && scheduleData[aide.id][p.id];
-          const isAbsent = aide.absent;
-          const typeStyle = getStyleForType(slot ? slot.type : 'plain');
-
-          staffListHTML += `
-            <div class="flex items-center justify-between p-2 rounded-xl border border-slate-100 text-xs mb-1.5 ${isAbsent ? 'bg-rose-50/60 opacity-60' : 'hover:bg-slate-50'}">
-              <div class="flex items-center gap-2 overflow-hidden">
-                <span class="w-6 h-6 rounded-full bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-[10px] flex-shrink-0">
-                  ${aide.gender === 'M' ? '👨' : '👩'}
-                </span>
-                <div class="truncate">
-                  <span class="font-bold text-slate-900 ${isAbsent ? 'line-through text-slate-400' : ''}">${aide.name}</span>
-                </div>
-              </div>
-              <div class="text-[10px] px-2 py-0.5 rounded font-bold max-w-[170px] truncate ${typeStyle}">
-                ${isAbsent ? 'ABSENT' : (slot ? slot.text : 'Off Duty')}
-              </div>
-            </div>
-          `;
-        });
-
-        card.innerHTML = `
-          <div>
-            <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-100">
-              <div>
-                <h4 class="font-black text-slate-900 text-sm">${p.name}</h4>
-                <span class="text-[11px] font-semibold text-indigo-600 font-mono">${p.label}</span>
-              </div>
-              ${p.isLunchSlot ? '<span class="bg-amber-100 text-amber-900 font-black text-[10px] px-2 py-0.5 rounded">Lunch Window</span>' : ''}
-            </div>
-            <div class="space-y-1">
-              ${staffListHTML}
-            </div>
-          </div>
-        `;
-        container.appendChild(card);
-      });
+      const modal = document.getElementById('addStaffModal');
+      modal.style.display = 'flex';
+      modal.classList.remove('hidden');
+      setTimeout(() => document.getElementById('newStaffNameInput').focus(), 150);
     }
 
-    function renderStaffPortalView() {
-      const tbody = document.getElementById('staffPortalTableBody');
-      const chipsContainer = document.getElementById('staffQuickPickChips');
-      const directLinkInput = document.getElementById('directStaffLinkInput');
+    function saveNewStaffMember() {
+      const name = document.getElementById('newStaffNameInput').value.trim();
+      const gender = document.getElementById('newStaffGenderInput').value;
+      const lunchPeriod = document.getElementById('newStaffLunchPeriodInput').value;
+      const timeIn = document.getElementById('newStaffTimeInInput').value;
+      const timeOut = document.getElementById('newStaffTimeOutInput').value;
+      const isFloater = document.getElementById('newStaffFloaterInput').checked;
+      const defaultDuty = document.getElementById('newStaffDefaultDutyInput').value;
+      const err = document.getElementById('addStaffError');
 
-      if (directLinkInput) {
-        directLinkInput.value = window.location.href.split('#')[0] + '#staff';
+      if (!name) {
+        err.innerText = 'Please enter a staff member name.';
+        err.classList.remove('hidden');
+        return;
       }
 
-      // Quick pick chips
-      if (chipsContainer) {
-        chipsContainer.innerHTML = '';
-        staffList.forEach(aide => {
-          const isSelected = (selectedStaffAideId === aide.id);
-          const chip = document.createElement('button');
-          chip.onclick = () => selectStaffAideForDetail(aide.id);
-          chip.className = `px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
-            isSelected 
-              ? 'bg-white text-indigo-900 shadow-md font-black ring-2 ring-indigo-300' 
-              : 'bg-indigo-950/60 hover:bg-white/20 text-indigo-100 border border-indigo-400/30'
-          }`;
-          chip.innerHTML = `
-            <span>${aide.gender === 'M' ? '👨' : '👩'}</span>
-            <span>${aide.name}</span>
-            ${aide.absent ? '<span class="bg-rose-500 text-white text-[9px] px-1 rounded">Out</span>' : ''}
-          `;
-          chipsContainer.appendChild(chip);
-        });
+      // Generate a unique ID from name
+      let id = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (staffList.some(s => s.id === id)) {
+        id = id + '_' + Math.floor(Math.random() * 1000);
       }
 
-      if (!tbody) return;
-      tbody.innerHTML = '';
+      const newAide = {
+        id: id,
+        name: name,
+        gender: gender,
+        timeIn: timeIn || '07:30',
+        timeOut: timeOut || '15:00',
+        lunchPeriod: lunchPeriod || 'p5',
+        isFloater: isFloater,
+        absent: false
+      };
 
+      staffList.push(newAide);
+
+      // Create their schedule baseline
+      DEFAULT_SCHEDULE[id] = {};
+      scheduleData[id] = {};
+
+      const inMin = timeToMinutes(newAide.timeIn);
+      const outMin = timeToMinutes(newAide.timeOut);
+
+      PERIODS.forEach(p => {
+        if (p.endMin <= inMin || p.startMin >= outMin) {
+          DEFAULT_SCHEDULE[id][p.id] = { text: 'Off Duty', type: 'off' };
+        } else if (p.id === newAide.lunchPeriod) {
+          DEFAULT_SCHEDULE[id][p.id] = { text: 'LUNCH', type: 'lunch' };
+        } else {
+          let dutyName = 'General Coverage';
+          if (defaultDuty === 'hall2MS') dutyName = '2nd Floor MS Support';
+          else if (defaultDuty === 'hall2HS') dutyName = '2nd Floor HS Support';
+          else if (defaultDuty === 'hall3MS') dutyName = '3rd Floor MS Support';
+          else if (defaultDuty === 'hall3HS') dutyName = '3rd Floor HS Support';
+          else if (defaultDuty === 'cafe') dutyName = 'Cafeteria Floor Support';
+
+          DEFAULT_SCHEDULE[id][p.id] = { text: dutyName, type: defaultDuty };
+        }
+        scheduleData[id][p.id] = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE[id][p.id]));
+      });
+
+      saveScheduleState();
+      closeModal('addStaffModal');
+      showToast(`Added ${newAide.name} to the roster!`, 'emerald');
+      updateAllDisplays();
+    }
+
+    // ==========================================
+    // LATE ARRIVAL & EARLY DEPARTURE LOGIC
+    // ==========================================
+    function openAdjustHoursModal(preselectedAideId = null) {
+      if (currentAppMode !== 'admin') {
+        promptSupervisorUnlock();
+        return;
+      }
+
+      const selectStaff = document.getElementById('adjustStaffSelect');
+      selectStaff.innerHTML = '';
       staffList.forEach(aide => {
-        const isAbsent = aide.absent;
-        const p2 = scheduleData[aide.id]['p2']?.text || 'None';
-        const p3 = scheduleData[aide.id]['p3']?.text || 'None';
+        const opt = document.createElement('option');
+        opt.value = aide.id;
+        opt.innerText = `${aide.name} (${aide.timeIn} - ${aide.timeOut})`;
+        if (preselectedAideId && aide.id === preselectedAideId) opt.selected = true;
+        selectStaff.appendChild(opt);
+      });
 
-        let lunchLabel = 'None';
+      // Populate period options
+      const lateSel = document.getElementById('adjustLateArrivingPeriod');
+      const earlySel = document.getElementById('adjustEarlyLeavingPeriod');
+      lateSel.innerHTML = '';
+      earlySel.innerHTML = '';
+
+      PERIODS.forEach((p, idx) => {
+        const o1 = document.createElement('option');
+        o1.value = p.id;
+        o1.innerText = `${p.name} (${p.label})`;
+        if (idx === 2) o1.selected = true; // default Period 2
+        lateSel.appendChild(o1);
+
+        const o2 = document.createElement('option');
+        o2.value = p.id;
+        o2.innerText = `${p.name} (${p.label})`;
+        if (idx === PERIODS.length - 3) o2.selected = true; // default Period 7
+        earlySel.appendChild(o2);
+      });
+
+      syncAdjustModalFields();
+      setAdjustType('late');
+
+      const modal = document.getElementById('adjustHoursModal');
+      modal.style.display = 'flex';
+      modal.classList.remove('hidden');
+    }
+
+    function setAdjustType(type) {
+      currentAdjustType = type;
+      const btnLate = document.getElementById('btnTypeLate');
+      const btnEarly = document.getElementById('btnTypeEarly');
+      const btnBoth = document.getElementById('btnTypeBoth');
+
+      btnLate.className = (type === 'late') ? 'py-2 px-2 text-center rounded-lg border font-bold text-xs bg-amber-100 text-amber-900 border-amber-400' : 'py-2 px-2 text-center rounded-lg border font-bold text-xs bg-white text-slate-700 border-slate-200';
+      btnEarly.className = (type === 'early') ? 'py-2 px-2 text-center rounded-lg border font-bold text-xs bg-amber-100 text-amber-900 border-amber-400' : 'py-2 px-2 text-center rounded-lg border font-bold text-xs bg-white text-slate-700 border-slate-200';
+      btnBoth.className = (type === 'both') ? 'py-2 px-2 text-center rounded-lg border font-bold text-xs bg-amber-100 text-amber-900 border-amber-400' : 'py-2 px-2 text-center rounded-lg border font-bold text-xs bg-white text-slate-700 border-slate-200';
+
+      document.getElementById('lateOptionsContainer').classList.toggle('hidden', type === 'early');
+      document.getElementById('earlyOptionsContainer').classList.toggle('hidden', type === 'late');
+    }
+
+    function syncAdjustModalFields() {
+      const aideId = document.getElementById('adjustStaffSelect').value;
+      const adj = dailyAdjustments[aideId];
+      const summary = document.getElementById('adjustStatusSummary');
+      const btnClear = document.getElementById('btnClearAdjust');
+
+      if (adj) {
+        let desc = '';
+        if (adj.latePeriod && adj.earlyPeriod) {
+          const pL = PERIODS.find(p => p.id === adj.latePeriod);
+          const pE = PERIODS.find(p => p.id === adj.earlyPeriod);
+          desc = `Arriving at ${pL?.name || adj.latePeriod} & Leaving after ${pE?.name || adj.earlyPeriod}`;
+        } else if (adj.latePeriod) {
+          const pL = PERIODS.find(p => p.id === adj.latePeriod);
+          desc = `Arriving late at ${pL?.name || adj.latePeriod}`;
+        } else if (adj.earlyPeriod) {
+          const pE = PERIODS.find(p => p.id === adj.earlyPeriod);
+          desc = `Leaving early after ${pE?.name || adj.earlyPeriod}`;
+        }
+        summary.innerHTML = `<strong class="text-amber-800">Active today:</strong> ${desc}`;
+        btnClear.classList.remove('hidden');
+      } else {
+        summary.innerText = 'Currently scheduled for their normal shift.';
+        btnClear.classList.add('hidden');
+      }
+    }
+
+    function applyAdjustedHours() {
+      const aideId = document.getElementById('adjustStaffSelect').value;
+      const aide = staffList.find(a => a.id === aideId);
+      if (!aide) return;
+
+      const latePeriodId = (currentAdjustType === 'late' || currentAdjustType === 'both') ? document.getElementById('adjustLateArrivingPeriod').value : null;
+      const earlyPeriodId = (currentAdjustType === 'early' || currentAdjustType === 'both') ? document.getElementById('adjustEarlyLeavingPeriod').value : null;
+
+      const lateIdx = latePeriodId ? PERIODS.findIndex(p => p.id === latePeriodId) : -1;
+      const earlyIdx = earlyPeriodId ? PERIODS.findIndex(p => p.id === earlyPeriodId) : 999;
+
+      dailyAdjustments[aideId] = {
+        latePeriod: latePeriodId,
+        earlyPeriod: earlyPeriodId
+      };
+
+      // Reset their slots to baseline first
+      PERIODS.forEach(per => {
+        scheduleData[aideId][per.id] = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE[aideId][per.id]));
+      });
+
+      // Mark affected periods as open/uncovered
+      PERIODS.forEach((per, idx) => {
+        const baseline = DEFAULT_SCHEDULE[aideId][per.id];
+        if (idx < lateIdx && baseline.type !== 'off') {
+          scheduleData[aideId][per.id] = {
+            text: `⚠️ LATE ARRIVAL (${baseline.text})`,
+            type: 'off',
+            originalDuty: baseline.text,
+            originalType: baseline.type
+          };
+        } else if (idx > earlyIdx && baseline.type !== 'off') {
+          scheduleData[aideId][per.id] = {
+            text: `⚠️ EARLY DEPARTURE (${baseline.text})`,
+            type: 'off',
+            originalDuty: baseline.text,
+            originalType: baseline.type
+          };
+        }
+      });
+
+      saveScheduleState();
+      closeModal('adjustHoursModal');
+      showToast(`Updated hours for ${aide.name}. Open slots highlighted for coverage!`, 'amber');
+      updateAllDisplays();
+    }
+
+    function clearAideAdjustedHours() {
+      const aideId = document.getElementById('adjustStaffSelect').value;
+      const aide = staffList.find(a => a.id === aideId);
+      if (!aide) return;
+
+      delete dailyAdjustments[aideId];
+
+      // Restore baseline
+      PERIODS.forEach(per => {
+        scheduleData[aideId][per.id] = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE[aideId][per.id]));
+      });
+
+      // Revert colleagues who covered for this aide
+      staffList.forEach(otherAide => {
+        if (otherAide.id === aideId) return;
         PERIODS.forEach(per => {
-          const s = scheduleData[aide.id][per.id];
-          if (s && s.type === 'lunch') {
-            lunchLabel = `${per.name} (${per.label})`;
+          const s = scheduleData[otherAide.id] && scheduleData[otherAide.id][per.id];
+          if (s && s.text && s.text.includes(`(Covering ${aide.name})`)) {
+            scheduleData[otherAide.id][per.id] = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE[otherAide.id][per.id]));
           }
         });
-
-        const pCafe = [
-          scheduleData[aide.id]['p4']?.text,
-          scheduleData[aide.id]['p5']?.text,
-          scheduleData[aide.id]['p6']?.text,
-          scheduleData[aide.id]['p7']?.text
-        ].filter(t => t && (t.includes('Cafeteria') || t.includes('Bathroom'))).join(' • ') || 'None';
-
-        const pDismiss = scheduleData[aide.id]['p_dis']?.text || 'Regular Departure';
-
-        const tr = document.createElement('tr');
-        tr.className = isAbsent ? 'bg-rose-50 text-slate-400' : 'hover:bg-indigo-50/40 cursor-pointer transition';
-        tr.onclick = () => selectStaffAideForDetail(aide.id);
-
-        tr.innerHTML = `
-          <td class="py-3 px-4">
-            <div class="flex items-center gap-2">
-              <span class="text-sm">${aide.gender === 'M' ? '👨' : '👩'}</span>
-              <div>
-                <span class="font-extrabold text-slate-900 text-xs ${isAbsent ? 'line-through text-slate-400' : ''}">${aide.name}</span>
-                ${aide.isFloater ? '<span class="ml-1 text-[9px] bg-indigo-100 text-indigo-700 px-1 rounded font-bold">Floater</span>' : ''}
-              </div>
-            </div>
-          </td>
-          <td class="py-3 px-4 font-mono text-[11px] font-semibold whitespace-nowrap">
-            ${aide.timeIn} – ${aide.timeOut}
-          </td>
-          <td class="py-3 px-4 bg-amber-50/70 font-black text-amber-950 text-xs whitespace-nowrap">
-            🥪 ${lunchLabel}
-          </td>
-          <td class="py-3 px-4 text-xs">
-            <div class="text-[11px]"><strong class="text-slate-600">P2:</strong> ${p2}</div>
-            <div class="text-[11px]"><strong class="text-slate-600">P3:</strong> ${p3}</div>
-          </td>
-          <td class="py-3 px-4 text-xs">
-            <div class="text-[11px]"><strong class="text-slate-600">Cafe:</strong> ${pCafe}</div>
-            <div class="text-[11px]"><strong class="text-slate-600">Dismissal:</strong> ${pDismiss}</div>
-          </td>
-          <td class="py-3 px-4 whitespace-nowrap">
-            ${isAbsent ? `
-              <span class="bg-rose-600 text-white font-extrabold text-[10px] px-2 py-1 rounded-full">
-                ABSENT TODAY
-              </span>
-            ` : `
-              <span class="bg-emerald-100 text-emerald-800 font-bold text-[10px] px-2 py-1 rounded-full border border-emerald-300">
-                ACTIVE / ON DUTY
-              </span>
-            `}
-          </td>
-        `;
-        tbody.appendChild(tr);
       });
 
-      if (selectedStaffAideId) {
-        renderIndividualStaffCard(selectedStaffAideId);
-      }
-    }
-
-    function selectStaffAideForDetail(aideId) {
-      selectedStaffAideId = aideId;
-      renderStaffPortalView();
-      renderIndividualStaffCard(aideId);
-    }
-
-    function renderIndividualStaffCard(aideId) {
-      const card = document.getElementById('individualStaffCard');
-      const aide = staffList.find(a => a.id === aideId);
-      if (!aide || !card) return;
-
-      let periodsTimelineHTML = '';
-      PERIODS.forEach(per => {
-        const slot = scheduleData[aide.id][per.id] || { text: 'Available', type: 'plain' };
-        const isLunch = slot.type === 'lunch';
-        const typeStyle = getStyleForType(slot.type);
-
-        periodsTimelineHTML += `
-          <div class="p-2 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs ${isLunch ? 'bg-amber-100 border-amber-300 ring-2 ring-amber-400' : 'bg-slate-50 border-slate-200'}">
-            <div class="flex items-center gap-2">
-              <span class="font-bold text-slate-800 min-w-[70px]">${per.name}:</span>
-              <span class="text-[11px] font-mono text-indigo-700">${per.label}</span>
-            </div>
-            <div class="px-2.5 py-1 rounded-lg font-bold text-xs ${typeStyle}">
-              ${slot.text}
-            </div>
-          </div>
-        `;
-      });
-
-      card.innerHTML = `
-        <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-3">
-          <div>
-            <span class="text-[10px] uppercase font-bold text-indigo-600">Personal Daily Schedule</span>
-            <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
-              <span>${aide.gender === 'M' ? '👨' : '👩'}</span>
-              <span>${aide.name}</span>
-              <span class="text-xs font-normal text-slate-500 font-mono">(${aide.timeIn} – ${aide.timeOut})</span>
-            </h3>
-          </div>
-          <button onclick="document.getElementById('individualStaffCard').classList.add('hidden')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold px-2.5 py-1 rounded-lg">✕ Close Card</button>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-          ${periodsTimelineHTML}
-        </div>
-      `;
-
-      card.classList.remove('hidden');
-      card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    function toggleStaffMasterTableView() {
-      const wrapper = document.getElementById('staffFullMasterWrapper');
-      const container = document.getElementById('staffReadOnlyGridContainer');
-      const btn = document.getElementById('btnToggleStaffMasterTable');
-
-      if (wrapper.classList.contains('hidden')) {
-        wrapper.classList.remove('hidden');
-        btn.innerText = 'Hide Period Grid';
-        const masterTable = document.getElementById('masterScheduleTable');
-        container.innerHTML = '';
-        const clone = masterTable.cloneNode(true);
-        clone.querySelectorAll('td').forEach(td => td.removeAttribute('onclick'));
-        container.appendChild(clone);
-      } else {
-        wrapper.classList.add('hidden');
-        btn.innerText = 'Show Full Period-by-Period Grid';
-      }
-    }
-
-    const PRESET_DUTIES = [
-      // 4 Main Floors
-      { text: '2nd Floor MS Support', type: 'hall2MS' },
-      { text: '2nd Floor HS Support', type: 'hall2HS' },
-      { text: '3rd Floor MS Support', type: 'hall3MS' },
-      { text: '3rd Floor HS Support', type: 'hall3HS' },
-      // Cafeteria & Lunch
-      { text: 'Cafeteria Floor Support', type: 'cafe' },
-      { text: 'Cafeteria (Boys Bathroom)', type: 'boysBath' },
-      { text: 'Cafeteria (Girls Bathroom)', type: 'girlsBath' },
-      { text: 'LUNCH', type: 'lunch' },
-      // Arrival & Exits
-      { text: 'Bus Arrival Supervision (7:30 - 8:15)', type: 'bus' },
-      { text: 'Exit 2 Entry Support', type: 'exit' },
-      { text: 'Exit 3 Dismissal Supervision', type: 'exit' },
-      { text: 'Bus Duty (2:00 - Dismissal)', type: 'bus' },
-      { text: 'Security Desk', type: 'security' },
-      // Admin / Teacher Pairings
-      { text: 'Admin Support w/ Ms. Tobin (3rd fl)', type: 'admin' },
-      { text: 'Admin Support w/ Mr. McKenzie (2nd fl)', type: 'admin' },
-      { text: 'Admin Support w/ Mr. Gooden (3rd fl)', type: 'admin' },
-      { text: 'Admin Support w/ Ms. Rosa', type: 'admin' },
-      { text: 'Admin Support w/ Ms. Portocarrero', type: 'admin' },
-      // Tech, Attendance, Auditorium, Office
-      { text: 'Tech Support w/ Mr. Ramirez', type: 'tech' },
-      { text: 'Attendance Support w/ Ms. Flack', type: 'attend' },
-      { text: 'Attendance 3rd floor', type: 'attend' },
-      { text: 'Main Office Support', type: 'mainOffice' },
-      { text: 'Auditorium Supervision', type: 'auditorium' },
-      // Cases, Logistics, Utility
-      { text: 'Bring cases to Cafeteria', type: 'cases' },
-      { text: 'Cafeteria / Return cases to Main', type: 'cases' },
-      { text: 'Drop cellphone cases (2nd fl)', type: 'cases' },
-      { text: 'Drop off cases 3rd floor MS', type: 'cases' },
-      { text: 'Main for Yondr with magnet cart', type: 'cases' },
-      { text: 'Walk The Building', type: 'walk' },
-      { text: 'Help Clear Hallway', type: 'exit' },
-      { text: 'Utility (where needed)', type: 'utility' },
-      { text: 'Package Room / Supplies', type: 'packages' },
-      { text: 'Detention / After School', type: 'detention' },
-      { text: 'Off Duty', type: 'off' }
-    ];
-
-    function initPresetButtons() {
-      const container = document.getElementById('presetRoleButtons');
-      if (!container) return;
-      container.innerHTML = '';
-      PRESET_DUTIES.forEach(preset => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'px-2 py-1.5 text-left border rounded-lg bg-slate-50 hover:bg-slate-100 font-medium text-[11px] truncate transition';
-        btn.innerText = preset.text;
-        btn.onclick = () => {
-          document.getElementById('modalCustomDutyInput').value = preset.text;
-          document.getElementById('modalColorSelect').value = preset.type;
-        };
-        container.appendChild(btn);
-      });
-    }
-
-    function openCellModal(aideId, periodId) {
-      if (currentAppMode !== 'admin') return;
-      currentEditAideId = aideId;
-      currentEditPeriodId = periodId;
-
-      const aide = staffList.find(a => a.id === aideId);
-      const period = PERIODS.find(p => p.id === periodId);
-      if (!aide || !period) return;
-
-      const slot = scheduleData[aideId] && scheduleData[aideId][periodId] ? scheduleData[aideId][periodId] : { text: '', type: 'plain' };
-
-      const titleEl = document.getElementById('modalPeriodAideTitle');
-      const inputEl = document.getElementById('modalCustomDutyInput');
-      const colorEl = document.getElementById('modalColorSelect');
-
-      if (titleEl) titleEl.innerText = `${period.name} (${period.label}) — ${aide.name}`;
-      if (inputEl) inputEl.value = slot.text || '';
-      if (colorEl) colorEl.value = slot.type || 'plain';
-
-      initPresetButtons();
-
-      const modal = document.getElementById('editCellModal');
-      if (modal) {
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-      }
-    }
-
-    function closeModal(id) {
-      const modal = document.getElementById(id);
-      if (modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-      }
-    }
-
-    function saveCellEdit() {
-      if (!currentEditAideId || !currentEditPeriodId) return;
-      const textVal = document.getElementById('modalCustomDutyInput').value.trim();
-      const typeVal = document.getElementById('modalColorSelect').value;
-
-      scheduleData[currentEditAideId][currentEditPeriodId] = {
-        text: textVal || 'Available',
-        type: typeVal
-      };
-
-      closeModal('editCellModal');
-      showToast('Shift updated successfully', 'indigo');
+      saveScheduleState();
+      closeModal('adjustHoursModal');
+      showToast(`Restored normal scheduled hours for ${aide.name}`, 'indigo');
       updateAllDisplays();
     }
+<!-- ... existing code ... -->
+```
 
-    function setSlotToVacant() {
-      if (!currentEditAideId || !currentEditPeriodId) return;
-      scheduleData[currentEditAideId][currentEditPeriodId] = {
-        text: '⚠️ UNASSIGNED',
-        type: 'off'
-      };
-      closeModal('editCellModal');
-      showToast('Slot cleared to unassigned', 'rose');
-      updateAllDisplays();
-    }
-
+```html:School Aide Daily Coverage & Swap Manager:index.html
+<!-- ... existing code ... -->
     function resetDaySchedule() {
       staffList.forEach(a => a.absent = false);
+      dailyAdjustments = {};
       scheduleData = JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
       try {
         localStorage.removeItem('school_aide_live_schedule');
-        localStorage.removeItem('school_aide_live_roster');
+        localStorage.removeItem('school_aide_daily_adjustments');
         localStorage.setItem('school_aide_last_active_date', TODAY_KEY);
       } catch (e) {}
       showToast('Schedule reset to fresh morning default', 'indigo');
       updateAllDisplays();
     }
-
-    function switchView(viewName) {
-      activeMainView = viewName;
-      document.getElementById('viewMasterContainer').classList.toggle('hidden', viewName !== 'master');
-      document.getElementById('viewFloorsContainer').classList.toggle('hidden', viewName !== 'floors');
-      document.getElementById('viewPeriodsContainer').classList.toggle('hidden', viewName !== 'periods');
-      document.getElementById('viewStaffSiteContainer').classList.toggle('hidden', viewName !== 'staffsite');
-
-      // Update button highlights
-      const btnMap = {
-        'master': document.getElementById('navBtnMaster'),
-        'floors': document.getElementById('navBtnFloors'),
-        'periods': document.getElementById('navBtnPeriods'),
-        'staffsite': document.getElementById('navBtnStaffSite')
-      };
-
-      Object.keys(btnMap).forEach(k => {
-        const btn = btnMap[k];
-        if (!btn) return;
-        if (k === viewName) {
-          btn.className = 'px-3 py-1.5 rounded-lg bg-white text-indigo-700 shadow-xs font-bold transition flex items-center gap-1.5';
-        } else {
-          btn.className = 'px-3 py-1.5 rounded-lg hover:text-slate-900 transition flex items-center gap-1.5';
-        }
-      });
-
-      if (viewName === 'periods') renderPeriodBreakdown();
-      if (viewName === 'staffsite') renderStaffPortalView();
-      if (viewName === 'floors') renderFloorMonitorAndRadar();
-    }
-
-    function updateAllDisplays() {
-      renderMasterGrid();
-      renderQuickAbsencePills();
-      renderFloorMonitorAndRadar();
-      if (activeMainView === 'periods') renderPeriodBreakdown();
-      if (activeMainView === 'staffsite') renderStaffPortalView();
-    }
-
-    function copyShareableUrl() {
-      const url = window.location.href;
-      copyTextToClipboard(url);
-      showToast('Copied schedule link to clipboard!', 'indigo');
-    }
-
-    function copyDirectStaffLink() {
-      const url = window.location.href.split('#')[0] + '#staff';
-      copyTextToClipboard(url);
-      showToast('Copied direct Staff Portal link!', 'emerald');
-    }
-
-    function copyTextToClipboard(text) {
-      const textarea = document.createElement('textarea');
-      textarea.value = text;
-      textarea.style.position = 'fixed';
-      textarea.style.opacity = '0';
-      document.body.appendChild(textarea);
-      textarea.select();
-      try {
-        document.execCommand('copy');
-      } catch (err) {
-        console.error('Copy failed', err);
-      }
-      document.body.removeChild(textarea);
-    }
-
-    function exportToCSV() {
-      let csv = 'Period,Time,' + staffList.map(a => `"${a.name}"`).join(',') + '\n';
-      PERIODS.forEach(p => {
-        const row = [
-          `"${p.name}"`,
-          `"${p.label}"`,
-          ...staffList.map(a => `"${scheduleData[a.id][p.id]?.text || ''}"`)
-        ];
-        csv += row.join(',') + '\n';
-      });
-
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', `aide_coverage_schedule_${new Date().toISOString().split('T')[0]}.csv`);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      showToast('CSV export downloaded', 'emerald');
-    }
-
-    function showToast(msg, colorScheme = 'indigo') {
-      const toast = document.getElementById('toastBox');
-      const msgEl = document.getElementById('toastMessage');
-      if (!toast || !msgEl) return;
-
-      msgEl.innerText = msg;
-      toast.classList.remove('translate-y-20', 'opacity-0');
-      toast.classList.add('translate-y-0', 'opacity-100');
-
-      setTimeout(() => {
-        toast.classList.remove('translate-y-0', 'opacity-100');
-        toast.classList.add('translate-y-20', 'opacity-0');
-      }, 3000);
-    }
-
-    window.onload = function() {
-      const d = new Date();
-      const options = { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' };
-      const dateEl = document.getElementById('headerTodayDate');
-      if (dateEl) dateEl.innerText = d.toLocaleDateString('en-US', options);
-
-      initPeriodFilterOptions();
-
-      // Automatically launch Staff Portal if URL ends with #staff
-      if (window.location.hash === '#staff') {
-        setAppMode('staff');
-      } else {
-        setAppMode('admin');
-      }
-
-      updateAllDisplays();
-    };
-  </script>
-</body>
-</html>
+<!-- ... existing code ... -->
