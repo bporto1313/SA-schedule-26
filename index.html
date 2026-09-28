@@ -832,7 +832,25 @@
       const savedStaff = localStorage.getItem('school_aide_staff_roster');
       if (savedStaff) {
         staffList = JSON.parse(savedStaff);
+        
+        // Auto-heal and restore default hours if missing from older saved data
         staffList.forEach(st => {
+          const baseline = INITIAL_STAFF.find(b => b.id === st.id);
+          if (baseline) {
+            if (!st.hours || st.hours === 'undefined - undefined' || st.hours.trim() === '') {
+              st.hours = baseline.hours;
+            }
+            if (st.startMin === undefined || st.startMin === null) {
+              st.startMin = baseline.startMin;
+            }
+            if (st.endMin === undefined || st.endMin === null) {
+              st.endMin = baseline.endMin;
+            }
+            if (!st.lunchPeriod) {
+              st.lunchPeriod = baseline.lunchPeriod;
+            }
+          }
+
           if (!DEFAULT_SCHEDULE[st.id]) {
             DEFAULT_SCHEDULE[st.id] = {};
             PERIODS.forEach(per => {
