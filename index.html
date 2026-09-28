@@ -157,12 +157,12 @@
     <div id="legendCard" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-3 overflow-x-auto">
       <div class="flex items-center justify-between gap-2 mb-2">
         <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Duty Color Key &amp; Building Zones</h3>
-        <span class="text-[11px] text-slate-400">Click any cell to edit or reassign</span>
+        <span class="text-[11px] text-slate-400">Click any cell in the grid to edit or reassign</span>
       </div>
       <div class="flex items-center gap-2 flex-wrap text-xs">
         <span class="duty-lunch px-2 py-0.5 rounded font-bold">🥪 Lunch</span>
         <span class="duty-cafe px-2 py-0.5 rounded font-bold">🍽️ Cafeteria Floor</span>
-        <span class="duty-boys-bath px-2 py-0.5 rounded font-bold">🚻 Boys Bath (Male Pref)</span>
+        <span class="duty-boys-bath px-2 py-0.5 rounded font-bold">🚻 Boys Bath</span>
         <span class="duty-girls-bath px-2 py-0.5 rounded font-bold">🚻 Girls Bath</span>
         <span class="duty-floor-2ms px-2 py-0.5 rounded font-bold">🏢 2nd Floor MS</span>
         <span class="duty-floor-2hs px-2 py-0.5 rounded font-bold">🏢 2nd Floor HS</span>
@@ -182,48 +182,12 @@
 
     <div id="tabMaster" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse min-w-[1050px]">
-          <thead>
-            <tr class="bg-slate-900 text-white text-xs uppercase tracking-wider font-bold">
-              <th class="p-3 sticky left-0 bg-slate-900 z-20 w-44 shadow-md">School Aide</th>
-              <th class="p-2 text-center border-l border-slate-800">Hours</th>
-              <th class="p-2 border-l border-slate-800 text-center">
-                7:30–8:15<br><span class="text-[10px] text-slate-400 font-normal">Arrival</span>
-              </th>
-              <th class="p-2 border-l border-slate-800 text-center bg-indigo-950/80">
-                P1 &amp; Announce<br><span class="text-[10px] text-indigo-300 font-normal">8:15–9:05</span>
-              </th>
-              <th class="p-2 border-l border-slate-800 text-center">
-                Period 2<br><span class="text-[10px] text-slate-400 font-normal">9:08–9:52</span>
-              </th>
-              <th class="p-2 border-l border-slate-800 text-center">
-                Period 3<br><span class="text-[10px] text-slate-400 font-normal">9:55–10:39</span>
-              </th>
-              <th class="p-2 border-l border-slate-800 text-center bg-amber-950/40">
-                Period 4 (L1)<br><span class="text-[10px] text-amber-300 font-normal">10:42–11:26</span>
-              </th>
-              <th class="p-2 border-l border-slate-800 text-center bg-amber-950/40">
-                Period 5 (L2)<br><span class="text-[10px] text-amber-300 font-normal">11:29–12:13</span>
-              </th>
-              <th class="p-2 border-l border-slate-800 text-center bg-amber-950/40">
-                Period 6 (L3)<br><span class="text-[10px] text-amber-300 font-normal">12:16–1:00</span>
-              </th>
-              <th class="p-2 border-l border-slate-800 text-center bg-amber-950/40">
-                Period 7 (L4)<br><span class="text-[10px] text-amber-300 font-normal">1:03–1:47</span>
-              </th>
-              <th class="p-2 border-l border-slate-800 text-center">
-                Period 8<br><span class="text-[10px] text-slate-400 font-normal">1:51–2:35</span>
-              </th>
-              <th class="p-2 border-l border-slate-800 text-center">
-                Dismissal<br><span class="text-[10px] text-slate-400 font-normal">2:35–3:00</span>
-              </th>
-              <th class="p-2 border-l border-slate-800 text-center">
-                After School<br><span class="text-[10px] text-slate-400 font-normal">3:00–5:30</span>
-              </th>
-            </tr>
+        <table class="w-full text-left border-collapse min-w-[1100px]">
+          <thead id="masterScheduleThead" class="bg-slate-900 text-white text-xs uppercase tracking-wider font-bold">
+            <!-- Dynamically populated with Period column + Staff names across the top -->
           </thead>
           <tbody id="masterScheduleTbody" class="divide-y divide-slate-100 text-xs">
-            <!-- Rendered via JS -->
+            <!-- Dynamically populated with Period rows down the left -->
           </tbody>
         </table>
       </div>
@@ -286,7 +250,7 @@
           <select id="modalColorSelect" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl font-medium text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
             <option value="duty-lunch">🥪 Lunch (Duty Free)</option>
             <option value="duty-cafe">🍽️ Cafeteria Floor</option>
-            <option value="duty-boys-bath">🚻 Cafeteria Boys Bath (Male Pref)</option>
+            <option value="duty-boys-bath">🚻 Cafeteria Boys Bath</option>
             <option value="duty-girls-bath">🚻 Cafeteria Girls Bath</option>
             <option value="duty-floor-2ms">🏢 2nd Floor MS</option>
             <option value="duty-floor-2hs">🏢 2nd Floor HS</option>
@@ -413,24 +377,14 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">Gender (for Restroom Pref):</label>
-            <select id="newStaffGenderInput" class="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl font-semibold">
-              <option value="female">Female</option>
-              <option value="male">Male (Cafe Bath)</option>
-              <option value="other">Other / Flexible</option>
-            </select>
-          </div>
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">Assigned Lunch Period:</label>
-            <select id="newStaffLunchInput" class="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl font-semibold">
-              <option value="p4">Period 4 (10:42–11:26)</option>
-              <option value="p5" selected>Period 5 (11:29–12:13)</option>
-              <option value="p6">Period 6 (12:16–1:00)</option>
-              <option value="p7">Period 7 (1:03–1:47)</option>
-            </select>
-          </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Assigned Lunch Period:</label>
+          <select id="newStaffLunchInput" class="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl font-semibold">
+            <option value="p4">Period 4 (10:42–11:26)</option>
+            <option value="p5" selected>Period 5 (11:29–12:13)</option>
+            <option value="p6">Period 6 (12:16–1:00)</option>
+            <option value="p7">Period 7 (1:03–1:47)</option>
+          </select>
         </div>
 
         <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
@@ -570,7 +524,6 @@
     </div>
   </div>
 
-  <!-- Notification Toast -->
   <div id="toastNotification" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
     <div id="toastCard" class="px-4 py-3 rounded-2xl shadow-xl border bg-slate-900 text-white text-xs font-bold flex items-center gap-2">
       <span id="toastIcon">ℹ️</span>
@@ -596,19 +549,19 @@
 
     // --- 2. BASELINE STAFF ROSTER ---
     const INITIAL_STAFF = [
-      { id: 'romero', name: 'Ms. Romero', hours: '7:30 - 3:00', startMin: 450, endMin: 900, gender: 'female', lunchPeriod: 'p5', absent: false },
-      { id: 'reyes', name: 'Ms. Reyes', hours: '7:30 - 3:00', startMin: 450, endMin: 900, gender: 'female', lunchPeriod: 'p6', absent: false },
-      { id: 'roth', name: 'Ms. Roth', hours: '7:30 - 3:00', startMin: 450, endMin: 900, gender: 'female', lunchPeriod: 'p7', absent: false },
-      { id: 'ramales', name: 'Ms. Ramales', hours: '7:15 - 3:15', startMin: 435, endMin: 915, gender: 'female', lunchPeriod: 'p5', absent: false },
-      { id: 'barrios', name: 'Mr. Barrios', hours: '8:00 - 3:30', startMin: 480, endMin: 930, gender: 'male', lunchPeriod: 'p5', absent: false },
-      { id: 'diaz', name: 'Mr. Diaz', hours: '9:30 - 5:30', startMin: 570, endMin: 1050, gender: 'male', lunchPeriod: 'p8', isFloater: true, absent: false },
-      { id: 'gonzalez', name: 'Mr. Gonzalez', hours: '7:30 - 3:00', startMin: 450, endMin: 900, gender: 'male', lunchPeriod: 'p6', absent: false },
-      { id: 'vuktilaj', name: 'Ms. Vuktilaj', hours: '9:15 - 2:30', startMin: 555, endMin: 870, gender: 'female', lunchPeriod: 'p7', absent: false },
-      { id: 'cortes', name: 'Ms. Cortes', hours: '7:30 - 3:00', startMin: 450, endMin: 900, gender: 'female', lunchPeriod: 'p4', absent: false },
-      { id: 'scott', name: 'John Scott', hours: '8:00 - 3:30', startMin: 480, endMin: 930, gender: 'male', lunchPeriod: 'p5', absent: false }
+      { id: 'romero', name: 'Ms. Romero', hours: '7:30 - 3:00', startMin: 450, endMin: 900, lunchPeriod: 'p5', absent: false },
+      { id: 'reyes', name: 'Ms. Reyes', hours: '7:30 - 3:00', startMin: 450, endMin: 900, lunchPeriod: 'p6', absent: false },
+      { id: 'roth', name: 'Ms. Roth', hours: '7:30 - 3:00', startMin: 450, endMin: 900, lunchPeriod: 'p7', absent: false },
+      { id: 'ramales', name: 'Ms. Ramales', hours: '7:15 - 3:15', startMin: 435, endMin: 915, lunchPeriod: 'p5', absent: false },
+      { id: 'barrios', name: 'Mr. Barrios', hours: '8:00 - 3:30', startMin: 480, endMin: 930, lunchPeriod: 'p5', absent: false },
+      { id: 'diaz', name: 'Mr. Diaz', hours: '9:30 - 5:30', startMin: 570, endMin: 1050, lunchPeriod: 'p8', isFloater: true, absent: false },
+      { id: 'gonzalez', name: 'Mr. Gonzalez', hours: '7:30 - 3:00', startMin: 450, endMin: 900, lunchPeriod: 'p6', absent: false },
+      { id: 'vuktilaj', name: 'Ms. Vuktilaj', hours: '9:15 - 2:30', startMin: 555, endMin: 870, lunchPeriod: 'p7', absent: false },
+      { id: 'cortes', name: 'Ms. Cortes', hours: '7:30 - 3:00', startMin: 450, endMin: 900, lunchPeriod: 'p4', absent: false },
+      { id: 'scott', name: 'John Scott', hours: '8:00 - 3:30', startMin: 480, endMin: 930, lunchPeriod: 'p5', absent: false }
     ];
 
-    // --- 3. BASELINE MASTER SCHEDULE (DEFAULT_SCHEDULE) ---
+    // --- STREAMING_CHUNK:Defining baseline master schedule dictionary ---
     const DEFAULT_SCHEDULE = {
       romero: {
         p0: { text: 'Bus Arrival (7:30-8:15)', type: 'duty-bus' },
@@ -742,12 +695,7 @@
       }
     };
 
-    // --- STREAMING_CHUNK:Implementing Color Resolver and State Loading Engine ---
-    /**
-     * DYNAMIC COLOR RESOLVER:
-     * Guarantees that any duty text is automatically matched to its vibrant, distinct color
-     * even if saved localStorage data previously stripped the CSS class or set it to plain.
-     */
+    // --- STREAMING_CHUNK:Implementing dynamic color resolver and state loader ---
     function getDutyColorClass(dutyText, defaultType = 'duty-plain') {
       if (!dutyText) return defaultType;
       const t = dutyText.toLowerCase().trim();
@@ -787,18 +735,16 @@
 
     const TODAY_KEY = new Date().toISOString().split('T')[0];
 
-    // Read stored data on startup and auto-repair colors
+    // Load stored state with color resolution
     try {
       const savedPin = localStorage.getItem('school_aide_pin');
       if (savedPin) supervisorPin = savedPin;
 
-      // 1. Load custom permanent master schedule if saved
       const savedPermanentMaster = localStorage.getItem('school_aide_permanent_master');
       if (savedPermanentMaster) {
         const parsedMaster = JSON.parse(savedPermanentMaster);
         Object.keys(parsedMaster).forEach(aideId => {
           DEFAULT_SCHEDULE[aideId] = parsedMaster[aideId];
-          // Ensure colors are properly resolved
           Object.keys(DEFAULT_SCHEDULE[aideId]).forEach(pId => {
             const slot = DEFAULT_SCHEDULE[aideId][pId];
             slot.type = getDutyColorClass(slot.text, slot.type);
@@ -806,7 +752,6 @@
         });
       }
 
-      // 2. Load active staff roster (including newly added members)
       const savedStaff = localStorage.getItem('school_aide_staff_roster');
       if (savedStaff) {
         staffList = JSON.parse(savedStaff);
@@ -824,13 +769,11 @@
         });
       }
 
-      // 3. Date check: auto-reset temporary morning call-outs on a fresh day
       const savedDate = localStorage.getItem('school_aide_date');
       if (savedDate === TODAY_KEY) {
         const savedSched = localStorage.getItem('school_aide_live_schedule');
         if (savedSched) {
           scheduleData = JSON.parse(savedSched);
-          // Auto-repair all colors in scheduleData
           Object.keys(scheduleData).forEach(aideId => {
             Object.keys(scheduleData[aideId]).forEach(pId => {
               const slot = scheduleData[aideId][pId];
@@ -860,7 +803,7 @@
       } catch (e) {}
     }
 
-    // --- STREAMING_CHUNK:Rendering Master Schedule Table, Calls-Out, and Floor Monitor ---
+    // --- STREAMING_CHUNK:Rendering Master Schedule Table with Inverted Columns and Rows ---
     function updateAllDisplays() {
       renderAbsencePills();
       renderMasterGrid();
@@ -899,55 +842,72 @@
     }
 
     function renderMasterGrid() {
+      const thead = document.getElementById('masterScheduleThead');
       const tbody = document.getElementById('masterScheduleTbody');
+      thead.innerHTML = '';
       tbody.innerHTML = '';
 
+      // Build Top Header: Period Column + Staff Member Columns (No gender icons)
+      let headerRowHtml = `
+        <tr>
+          <th class="p-3 sticky left-0 bg-slate-900 z-30 w-36 sm:w-44 shadow-md text-slate-300">
+            Period / Time
+          </th>
+      `;
+
       staffList.forEach(aide => {
+        headerRowHtml += `
+          <th class="p-3 text-center border-l border-slate-800 min-w-[125px] ${aide.absent ? 'bg-rose-950/80' : ''}">
+            <div class="font-extrabold text-white text-xs truncate max-w-[140px] mx-auto">${aide.name}</div>
+            <div class="text-[10px] text-slate-400 font-normal mt-0.5">${aide.hours}</div>
+            ${aide.absent ? '<span class="text-[9px] bg-rose-600 text-white px-1.5 py-0.5 rounded-full font-bold uppercase mt-1 inline-block">OUT</span>' : ''}
+            ${aide.isFloater && !aide.absent ? '<span class="text-[9px] text-amber-300 font-bold bg-amber-950/60 px-1.5 py-0.5 rounded mt-0.5 inline-block">⚡ Floater</span>' : ''}
+          </th>
+        `;
+      });
+      headerRowHtml += `</tr>`;
+      thead.innerHTML = headerRowHtml;
+
+      // Build Rows: Periods Down the Left Side
+      PERIODS.forEach(period => {
         const tr = document.createElement('tr');
-        tr.className = `hover:bg-slate-50 transition border-b border-slate-100 ${aide.absent ? 'bg-rose-50/50' : ''}`;
+        tr.className = `hover:bg-slate-50 transition border-b border-slate-100 ${period.isLunch ? 'bg-amber-50/20' : ''}`;
 
-        // Name Column
-        let nameHtml = `
-          <td class="p-3 sticky left-0 bg-white z-10 font-bold text-slate-900 flex flex-col justify-center border-r border-slate-100 shadow-xs">
-            <div class="flex items-center justify-between">
-              <span>${aide.name}</span>
-              ${aide.absent ? '<span class="text-[9px] bg-rose-600 text-white px-1.5 py-0.5 rounded-full font-extrabold uppercase">Out</span>' : ''}
+        // Sticky Left Period / Time Cell
+        let periodRowHtml = `
+          <td class="p-2.5 sticky left-0 bg-white z-20 font-bold border-r border-slate-200 shadow-xs">
+            <div class="text-xs text-slate-900 font-extrabold flex items-center justify-between">
+              <span>${period.label}</span>
+              ${period.isLunch ? '<span class="text-[9px] bg-amber-100 text-amber-800 px-1 py-0.2 rounded font-bold">Lunch</span>' : ''}
             </div>
-            <span class="text-[10px] text-slate-500 font-normal">${aide.gender === 'male' ? '👨 Male' : '👩 Female'} ${aide.isFloater ? '• ⚡ Floater' : ''}</span>
+            <div class="text-[10px] text-slate-500 font-semibold mt-0.5">${period.time}</div>
           </td>
         `;
 
-        // Hours Column
-        let hoursHtml = `
-          <td class="p-2 text-center text-[11px] font-semibold text-slate-600 border-r border-slate-100 whitespace-nowrap">
-            ${aide.hours}
-          </td>
-        `;
-
-        // Period Duty Cells
-        let periodsHtml = '';
-        PERIODS.forEach(period => {
+        // Each Aide's Cell for this Period
+        staffList.forEach(aide => {
           const slot = (scheduleData[aide.id] && scheduleData[aide.id][period.id]) || { text: 'Available', type: 'duty-plain' };
           const resolvedColor = getDutyColorClass(slot.text, slot.type);
           const isSlotOpen = slot.text && (slot.text.includes('🚨 OPEN') || slot.text.includes('⚠️ LATE') || slot.text.includes('⚠️ EARLY'));
           const isCovering = slot.text && slot.text.includes('(Covering');
 
-          periodsHtml += `
-            <td onclick="handleCellClick('${aide.id}', '${period.id}')" class="p-1.5 border-r border-slate-100 text-center cursor-pointer transition select-none">
-              <div class="min-h-[42px] px-2 py-1 rounded-lg flex flex-col justify-center items-center text-[11px] leading-tight ${resolvedColor} ${
+          periodRowHtml += `
+            <td onclick="handleCellClick('${aide.id}', '${period.id}')" class="p-1.5 border-r border-slate-100 text-center cursor-pointer transition select-none ${aide.absent ? 'bg-rose-50/30' : ''}">
+              <div class="min-h-[44px] px-2 py-1 rounded-lg flex flex-col justify-center items-center text-[11px] leading-tight ${resolvedColor} ${
                 isSlotOpen ? 'ring-2 ring-rose-500 animate-pulse font-extrabold' : ''
               } ${isCovering ? 'border-2 border-indigo-500 font-bold' : ''}">
-                <span class="truncate max-w-[130px]">${slot.text || '-'}</span>
+                <span class="truncate max-w-[125px]">${slot.text || '-'}</span>
               </div>
             </td>
           `;
         });
 
-        tr.innerHTML = nameHtml + hoursHtml + periodsHtml;
+        tr.innerHTML = periodRowHtml;
         tbody.appendChild(tr);
       });
     }
 
+    // --- STREAMING_CHUNK:Rendering Floor Radar and Area Evaluator ---
     function renderFloorRadar() {
       const container = document.getElementById('floorRadarCardsGrid');
       container.innerHTML = '';
@@ -1038,6 +998,7 @@
       }
     }
 
+    // --- STREAMING_CHUNK:Rendering Staff Individual Portal View ---
     function renderStaffView() {
       const badgesContainer = document.getElementById('staffSelectBadges');
       const cardsContainer = document.getElementById('staffCardsContainer');
@@ -1101,7 +1062,7 @@
       renderStaffView();
     }
 
-    // --- STREAMING_CHUNK:Implementing Morning Call-Out, Swap & Auto-Fill Operations ---
+    // --- STREAMING_CHUNK:Implementing Absence Toggle, Auto-Fill, and Rebalance Functions ---
     function toggleStaffAbsence(aideId) {
       if (currentAppMode !== 'admin') {
         promptSupervisorUnlock();
@@ -1197,8 +1158,6 @@
     }
 
     function findBestCandidateToCover(period, dutyText, dutyType, absentAideId) {
-      const isMaleRestroom = dutyText.toLowerCase().includes('boys bathroom');
-
       const candidates = staffList.filter(aide => {
         if (aide.absent || aide.id === absentAideId) return false;
         if (aide.startMin > period.startMin || aide.endMin < period.endMin) return false;
@@ -1207,7 +1166,6 @@
         if (!currentSlot) return false;
 
         if (currentSlot.type === 'duty-lunch' || currentSlot.text.toLowerCase().includes('lunch')) return false;
-        if (isMaleRestroom && aide.gender !== 'male') return false;
         if (currentSlot.type === 'duty-bus' || currentSlot.type === 'duty-tech') return false;
 
         return true;
@@ -1308,7 +1266,7 @@
       };
     }
 
-    // --- STREAMING_CHUNK:Cell Editing and Modal Interactivity ---
+    // --- STREAMING_CHUNK:Handling Cell Click and Modal Preset Actions ---
     function handleCellClick(aideId, periodId) {
       if (currentAppMode !== 'admin') {
         promptSupervisorUnlock();
@@ -1358,7 +1316,7 @@
       showToast('Duty slot cleared.', 'slate');
     }
 
-    // --- STREAMING_CHUNK:Staff Addition and Schedule Adjustment Logic ---
+    // --- STREAMING_CHUNK:Adding New Staff and Adjusting Daily Shift Hours ---
     function openAddStaffModal() {
       if (currentAppMode !== 'admin') {
         promptSupervisorUnlock();
@@ -1389,7 +1347,6 @@
       const id = name.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now().toString().slice(-4);
       const start = document.getElementById('newStaffStartInput').value.trim();
       const end = document.getElementById('newStaffEndInput').value.trim();
-      const gender = document.getElementById('newStaffGenderInput').value;
       const lunchPeriod = document.getElementById('newStaffLunchInput').value;
       const isFloater = document.getElementById('newStaffFloaterCheck').checked;
       const autoShuffle = document.getElementById('newStaffShuffleCheck').checked;
@@ -1400,7 +1357,6 @@
         hours: `${start} - ${end}`,
         startMin: timeToMinutes(start),
         endMin: timeToMinutes(end),
-        gender: gender,
         lunchPeriod: lunchPeriod,
         isFloater: isFloater,
         absent: false
@@ -1537,7 +1493,7 @@
       showToast('Hours reset to normal baseline.', 'emerald');
     }
 
-    // --- STREAMING_CHUNK:Implementing Permanent Master Save and Backup Routines ---
+    // --- STREAMING_CHUNK:Implementing Permanent Master and Backup Operations ---
     function saveAsPermanentMaster() {
       if (currentAppMode !== 'admin') {
         promptSupervisorUnlock();
@@ -1678,7 +1634,7 @@
       };
     }
 
-    // --- STREAMING_CHUNK:Supervisor PIN Authentication and App Mode Handling ---
+    // --- STREAMING_CHUNK:Handling Supervisor Security and Tab Navigation ---
     function toggleSupervisorMode() {
       if (currentAppMode === 'admin') {
         currentAppMode = 'staff';
@@ -1745,12 +1701,12 @@
     }
 
     function exportScheduleCSV() {
-      let csv = 'Staff Name,Hours,' + PERIODS.map(p => `"${p.label} (${p.time})"`).join(',') + '\n';
+      let csv = 'Period,Time,' + staffList.map(a => `"${a.name}"`).join(',') + '\n';
 
-      staffList.forEach(aide => {
-        const row = [`"${aide.name}"`, `"${aide.hours}"`];
-        PERIODS.forEach(p => {
-          const slot = (scheduleData[aide.id] && scheduleData[aide.id][p.id]) || { text: '' };
+      PERIODS.forEach(period => {
+        const row = [`"${period.label}"`, `"${period.time}"`];
+        staffList.forEach(aide => {
+          const slot = (scheduleData[aide.id] && scheduleData[aide.id][period.id]) || { text: '' };
           row.push(`"${(slot.text || '').replace(/"/g, '""')}"`);
         });
         csv += row.join(',') + '\n';
@@ -1785,7 +1741,7 @@
       }, 3200);
     }
 
-    // --- STREAMING_CHUNK:Window Load Event Listener ---
+    // --- STREAMING_CHUNK:Executing Window Load Initializer ---
     window.onload = function() {
       const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
       document.getElementById('todayDateLabel').textContent = new Date().toLocaleDateString(undefined, options);
