@@ -1497,37 +1497,72 @@
       updateAllDisplays();
     }
 
+    // Helper: Safely resolve staff work hours in minutes
+    function getPersonTimeWindow(person) {
+      let start = typeof person.startMin === 'number' ? person.startMin : null;
+      let end = typeof person.endMin === 'number' ? person.endMin : null;
+
+      if (start === null || end === null || isNaN(start) || isNaN(end)) {
+        if (person.hours) {
+          const parts = person.hours.split('-');
+          if (parts.length >= 2) {
+            start = parseTimeToMinutes(parts[0]);
+            end = parseTimeToMinutes(parts[1]);
+          }
+        }
+      }
+      return {
+        startMin: start !== null && !isNaN(start) ? start : 450,
+        endMin: end !== null && !isNaN(end) ? end : 900
+      };
+    }
+
     function autoFillAllOpenPosts() {
       if (currentAppMode !== 'admin') {
         promptSupervisorUnlock();
         return;
       }
 
+      const dept = getActiveDept();
       const staff = getStaffList();
       const sched = getScheduleData();
       let fillsCount = 0;
 
+      // STEP 1: Fill specific open slots from absences and late/early arrivals
       PERIODS.forEach(period => {
-        staff.forEach(absentStaff => {
-          const slot = sched[absentStaff.id] && sched[absentStaff.id][period.id];
-          if (!slot || !slot.text || !slot.text.includes('🚨 OPEN')) return;
+        staff.forEach(person => {
+          const slot = sched[person.id] && sched[person.id][period.id];
+          if (!slot || !slot.text) return;
 
-          const dutyToCover = slot.originalDuty || slot.text.replace('🚨 OPEN', '').replace(/[()]/g, '').trim();
+          const isOpenAbsence = slot.text.includes('🚨 OPEN');
+          const isLate = slot.text.includes('⚠️ LATE');
+          const isEarly = slot.text.includes('⚠️ EARLY');
+
+          if (!isOpenAbsence && !isLate && !isEarly) return;
+
+          // Extract original duty title
+          let dutyToCover = slot.originalDuty;
+          if (!dutyToCover) {
+            dutyToCover = slot.text.replace(/🚨 OPEN|⚠️ LATE|⚠️ EARLY|[()]/g, '').trim();
+          }
+          if (!dutyToCover || dutyToCover.toLowerCase() === 'available') {
+            dutyToCover = 'Building Floor Coverage';
+          }
           const dutyType = slot.originalType || getDutyColorClass(dutyToCover);
 
-          const candidate = findBestCandidateToCover(period, dutyToCover, dutyType, absentStaff.id);
+          const candidate = findBestCandidateToCover(period, dutyToCover, dutyType, person.id);
           if (candidate) {
-            const originalCandidateSlot = JSON.parse(JSON.stringify(sched[candidate.id][period.id]));
+            const originalCandSlot = JSON.parse(JSON.stringify(sched[candidate.id][period.id]));
             sched[candidate.id][period.id] = {
-              text: `${dutyToCover} (Covering ${absentStaff.name})`,
+              text: `${dutyToCover} (Covering ${person.name})`,
               type: dutyType,
-              coveringFor: absentStaff.id,
-              originalDuty: originalCandidateSlot.text,
-              originalType: originalCandidateSlot.type,
+              coveringFor: person.id,
+              originalDuty: originalCandSlot.originalDuty || originalCandSlot.text,
+              originalType: originalCandSlot.originalType || originalCandSlot.type,
               locked: false
             };
 
-            sched[absentStaff.id][period.id] = {
+            sched[person.id][period.id] = {
               text: `Covered by ${candidate.name}`,
               type: 'duty-off',
               locked: false
@@ -1538,92 +1573,300 @@
         });
       });
 
-      rebalanceBuildingCoverage(false);
-      updateAllDisplays();
-      showToast(`⚡ Auto-fill completed! Covered ${fillsCount} open post(s).`, 'emerald');
-    }
-
-    function findBestCandidateToCover(period, dutyToCover, dutyType, absentStaffId) {
-      const staff = getStaffList();
-      const sched = getScheduleData();
-
-      // Priority 1: Available Floater who is working during this period, not absent, not on lunch, not in a locked job
-      const availableFloater = staff.find(person => {
-        if (person.absent || person.id === absentStaffId || !person.isFloater) return false;
-        if (person.startMin > period.startMin || person.endMin < period.endMin) return false;
-        const s = sched[person.id] && sched[person.id][period.id];
-        if (!s || s.locked) return false;
-        if (s.type === 'duty-lunch' || s.type === 'duty-off') return false;
-        if (s.text && (s.text.includes('(Covering') || s.text.includes('🚨 OPEN'))) return false;
-        return true;
-      });
-
-      if (availableFloater) return availableFloater;
-
-      // Priority 2: Any available staff member whose current slot is unlocked and not critical
-      const availableGeneral = staff.find(person => {
-        if (person.absent || person.id === absentStaffId) return false;
-        if (person.startMin > period.startMin || person.endMin < period.endMin) return false;
-        const s = sched[person.id] && sched[person.id][period.id];
-        if (!s || s.locked) return false;
-        if (s.type === 'duty-lunch' || s.type === 'duty-off') return false;
-        if (s.text && (s.text.includes('(Covering') || s.text.includes('🚨 OPEN'))) return false;
-        
-        // Avoid pulling from solo core zones if other staff aren't there
-        return true;
-      });
-
-      return availableGeneral || null;
-    }
-
-    function rebalanceBuildingCoverage(showToastAlert = true) {
-      const dept = getActiveDept();
-      const zones = dept.zones || [];
-      const staff = getStaffList();
-      const sched = getScheduleData();
-
-      if (zones.length === 0) return;
-
+      // STEP 2: Fill any monitored building zones that are currently UNCOVERED in core periods
+      const zones = dept.zones || ['2nd Floor MS', '2nd Floor HS', '3rd Floor MS', '3rd Floor HS'];
       PERIODS.filter(p => p.isCore).forEach(period => {
         zones.forEach(zone => {
-          let hasCoverage = false;
-          staff.forEach(person => {
-            if (person.absent) return;
-            const slot = sched[person.id] && sched[person.id][period.id];
+          let isZoneCovered = false;
+          staff.forEach(s => {
+            if (s.absent) return;
+            const slot = sched[s.id] && sched[s.id][period.id];
             if (slot && slot.text && slot.text.toLowerCase().includes(zone.toLowerCase())) {
-              hasCoverage = true;
+              isZoneCovered = true;
             }
           });
 
-          if (!hasCoverage) {
-            // Find an eligible floater or unassigned aide who is present and unlocked
-            const candidate = staff.find(person => {
-              if (person.absent) return false;
-              if (person.startMin > period.startMin || person.endMin < period.endMin) return false;
-              const slot = sched[person.id] && sched[person.id][period.id];
-              if (!slot || slot.locked) return false;
-              if (slot.type === 'duty-lunch' || slot.type === 'duty-off') return false;
-              if (slot.text && (slot.text.includes('(Covering') || slot.text.includes('🚨 OPEN'))) return false;
-              
-              // Only pull if currently roaming or floater
-              return person.isFloater || (slot.text && (slot.text.includes('Walk') || slot.text.includes('Available') || slot.text.includes('Floater')));
-            });
-
+          if (!isZoneCovered) {
+            const candidate = findBestCandidateToCover(period, zone, getDutyColorClass(zone), null);
             if (candidate) {
-              const catClass = getDutyColorClass(zone);
+              const originalCandSlot = JSON.parse(JSON.stringify(sched[candidate.id][period.id]));
               sched[candidate.id][period.id] = {
                 text: zone,
-                type: catClass,
+                type: getDutyColorClass(zone),
+                originalDuty: originalCandSlot.originalDuty || originalCandSlot.text,
+                originalType: originalCandSlot.originalType || originalCandSlot.type,
                 locked: false
               };
+              fillsCount++;
             }
           }
         });
       });
 
+      // STEP 3: Deploy any staff sitting on "Available" into productive posts
+      staff.forEach(person => {
+        if (person.absent) return;
+        const { startMin, endMin } = getPersonTimeWindow(person);
+        PERIODS.forEach(period => {
+          if (period.startMin < startMin || period.endMin > endMin) return;
+          const slot = sched[person.id] && sched[person.id][period.id];
+          if (!slot || slot.locked || slot.type === 'duty-lunch' || slot.type === 'duty-off') return;
+
+          const txt = (slot.text || '').toLowerCase().trim();
+          if (txt === 'available' || txt === 'building floater' || txt === '') {
+            // Find which zone has the least coverage in this period
+            const zoneCounts = {};
+            zones.forEach(z => { zoneCounts[z] = 0; });
+            staff.forEach(s => {
+              if (s.absent || s.id === person.id) return;
+              const sSlot = sched[s.id] && sched[s.id][period.id];
+              if (sSlot && sSlot.text) {
+                zones.forEach(z => {
+                  if (sSlot.text.toLowerCase().includes(z.toLowerCase())) zoneCounts[z]++;
+                });
+              }
+            });
+
+            let lowestZone = zones[0];
+            let minCount = 999;
+            zones.forEach(z => {
+              if (zoneCounts[z] < minCount) {
+                minCount = zoneCounts[z];
+                lowestZone = z;
+              }
+            });
+
+            if (lowestZone && minCount < 2) {
+              sched[person.id][period.id] = {
+                text: lowestZone,
+                type: getDutyColorClass(lowestZone),
+                locked: false
+              };
+              fillsCount++;
+            }
+          }
+        });
+      });
+
+      updateAllDisplays();
+      if (fillsCount > 0) {
+        showToast(`⚡ Auto-fill completed! Assigned & covered ${fillsCount} post(s).`, 'emerald');
+      } else {
+        showToast('✅ All duty posts and building zones are already covered!', 'emerald');
+      }
+    }
+
+    function findBestCandidateToCover(period, dutyToCover, dutyType, targetStaffId) {
+      const staff = getStaffList();
+      const sched = getScheduleData();
+
+      let bestCandidate = null;
+      let bestScore = -9999;
+
+      staff.forEach(person => {
+        if (person.absent) return;
+        if (targetStaffId && person.id === targetStaffId) return;
+
+        const { startMin, endMin } = getPersonTimeWindow(person);
+        // Must be on shift for this period
+        if (startMin > period.startMin || endMin < period.endMin) return;
+
+        const slot = sched[person.id] && sched[person.id][period.id];
+        if (!slot) return;
+
+        // Never pull someone who is locked!
+        if (slot.locked) return;
+
+        // Never interrupt duty-free lunch!
+        if (slot.type === 'duty-lunch' || (slot.text && slot.text.toLowerCase().includes('lunch'))) return;
+
+        // Must not be off duty
+        if (slot.type === 'duty-off' || (slot.text && slot.text.toLowerCase().includes('off duty'))) return;
+
+        // Must not be already covering someone else in this period
+        if (slot.text && slot.text.includes('(Covering')) return;
+
+        // Must not be currently marked open or late/early
+        if (slot.text && (slot.text.includes('🚨 OPEN') || slot.text.includes('⚠️ LATE') || slot.text.includes('⚠️ EARLY'))) return;
+
+        // Candidate is eligible! Calculate priority score:
+        let score = 0;
+        const txt = (slot.text || '').toLowerCase().trim();
+
+        // Tier 1: completely free / available / roaming
+        if (txt === 'available' || txt === '' || txt === '-') {
+          score += 1000;
+        } else if (txt.includes('building floater') || txt.includes('roaming') || txt.includes('floater sub')) {
+          score += 800;
+        } else if (txt.includes('walk') || txt.includes('clear hallway')) {
+          score += 600;
+        } else if (person.isFloater) {
+          score += 500;
+        }
+
+        // Tier 2: Check if their current assignment is in a redundant/multi-person area
+        let duplicates = 0;
+        staff.forEach(other => {
+          if (other.absent || other.id === person.id) return;
+          const otherSlot = sched[other.id] && sched[other.id][period.id];
+          if (otherSlot && otherSlot.text && otherSlot.text.toLowerCase().trim() === txt) {
+            duplicates++;
+          }
+        });
+        if (duplicates > 0) {
+          score += 300 * duplicates; // Prioritize pulling if this room/post already has colleagues present
+        }
+
+        // Tier 3: Protect solo floor monitors from being pulled unless necessary
+        const dept = getActiveDept();
+        const zones = dept.zones || [];
+        let isSoloZone = false;
+        zones.forEach(z => {
+          if (txt.includes(z.toLowerCase()) && duplicates === 0) {
+            isSoloZone = true;
+          }
+        });
+        if (isSoloZone) {
+          score -= 400;
+        }
+
+        // Do not assign candidate if they are already doing this exact duty
+        if (txt === dutyToCover.toLowerCase().trim()) {
+          score -= 1000;
+        }
+
+        if (score > bestScore) {
+          bestScore = score;
+          bestCandidate = person;
+        }
+      });
+
+      return bestCandidate;
+    }
+
+    function rebalanceBuildingCoverage(showToastAlert = true) {
+      const dept = getActiveDept();
+      const zones = dept.zones || ['2nd Floor MS', '2nd Floor HS', '3rd Floor MS', '3rd Floor HS'];
+      const staff = getStaffList();
+      const sched = getScheduleData();
+      let rebalancedCount = 0;
+
+      if (zones.length === 0 || staff.length === 0) {
+        if (showToastAlert) showToast('No zones or staff to rebalance.', 'slate');
+        return;
+      }
+
+      // PASS 1: Guarantee every zone has at least one active, present staff member
+      PERIODS.filter(p => p.isCore).forEach(period => {
+        zones.forEach(zone => {
+          let isCovered = false;
+          staff.forEach(person => {
+            if (person.absent) return;
+            const slot = sched[person.id] && sched[person.id][period.id];
+            if (slot && slot.text && slot.text.toLowerCase().includes(zone.toLowerCase())) {
+              isCovered = true;
+            }
+          });
+
+          if (!isCovered) {
+            const candidate = findBestCandidateToCover(period, zone, getDutyColorClass(zone), null);
+            if (candidate) {
+              const originalSlot = JSON.parse(JSON.stringify(sched[candidate.id][period.id]));
+              sched[candidate.id][period.id] = {
+                text: zone,
+                type: getDutyColorClass(zone),
+                originalDuty: originalSlot.originalDuty || originalSlot.text,
+                originalType: originalSlot.originalType || originalSlot.type,
+                locked: false
+              };
+              rebalancedCount++;
+            }
+          }
+        });
+      });
+
+      // PASS 2: Fair Floor Rotation - prevent aides from being locked into the same hallway all day
+      PERIODS.filter(p => p.isCore).forEach((period, pIdx) => {
+        const movableStaff = [];
+        staff.forEach(person => {
+          if (person.absent) return;
+          const slot = sched[person.id] && sched[person.id][period.id];
+          if (!slot || slot.locked || slot.type === 'duty-lunch' || slot.type === 'duty-off') return;
+          if (slot.text && (slot.text.includes('Covering') || slot.text.includes('🚨 OPEN'))) return;
+
+          const matchedZoneIdx = zones.findIndex(z => slot.text.toLowerCase().includes(z.toLowerCase()));
+          if (matchedZoneIdx !== -1) {
+            movableStaff.push({ person, currentZoneIdx: matchedZoneIdx });
+          }
+        });
+
+        // Rotate zones among movable staff across periods
+        if (movableStaff.length >= 2) {
+          const offset = (pIdx % (zones.length - 1)) + 1;
+          movableStaff.forEach((item) => {
+            const newZoneIdx = (item.currentZoneIdx + offset) % zones.length;
+            const newZone = zones[newZoneIdx];
+            if (newZone && newZone !== zones[item.currentZoneIdx]) {
+              sched[item.person.id][period.id] = {
+                text: newZone,
+                type: getDutyColorClass(newZone),
+                locked: false
+              };
+              rebalancedCount++;
+            }
+          });
+        }
+      });
+
+      // PASS 3: Distribute newly added staff or "Available" staff into under-staffed zones
+      staff.forEach(person => {
+        if (person.absent) return;
+        const { startMin, endMin } = getPersonTimeWindow(person);
+        PERIODS.forEach(period => {
+          if (period.startMin < startMin || period.endMin > endMin) return;
+          const slot = sched[person.id] && sched[person.id][period.id];
+          if (!slot || slot.locked || slot.type === 'duty-lunch' || slot.type === 'duty-off') return;
+
+          const txt = (slot.text || '').toLowerCase().trim();
+          if (txt === 'available' || txt === 'building floater' || txt === '') {
+            const zoneCounts = {};
+            zones.forEach(z => { zoneCounts[z] = 0; });
+            staff.forEach(s => {
+              if (s.absent || s.id === person.id) return;
+              const sSlot = sched[s.id] && sched[s.id][period.id];
+              if (sSlot && sSlot.text) {
+                zones.forEach(z => {
+                  if (sSlot.text.toLowerCase().includes(z.toLowerCase())) zoneCounts[z]++;
+                });
+              }
+            });
+
+            let targetZone = zones[0];
+            let minZ = 999;
+            zones.forEach(z => {
+              if (zoneCounts[z] < minZ) {
+                minZ = zoneCounts[z];
+                targetZone = z;
+              }
+            });
+
+            sched[person.id][period.id] = {
+              text: targetZone,
+              type: getDutyColorClass(targetZone),
+              locked: false
+            };
+            rebalancedCount++;
+          }
+        });
+      });
+
+      updateAllDisplays();
       if (showToastAlert) {
-        updateAllDisplays();
-        showToast('🔀 Re-shuffle completed. Floor zones balanced!', 'violet');
+        if (rebalancedCount > 0) {
+          showToast(`🔀 Re-shuffle complete! Balanced & rotated ${rebalancedCount} post(s) across zones.`, 'violet');
+        } else {
+          showToast('✅ All building zones are already fully staffed and balanced.', 'emerald');
+        }
       }
     }
 
